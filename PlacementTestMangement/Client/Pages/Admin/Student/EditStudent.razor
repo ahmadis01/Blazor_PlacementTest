@@ -1,0 +1,44 @@
+﻿@page "/admin/student/{StudentId}"
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+
+
+<div class="container">	
+	<div class="form">
+		<EditForm Model="@student" class="card p-4" id="form" OnValidSubmit="@Edit">
+			<span class="mx-auto fw-bold fs-4">Edit Student</span>
+			<label for="name" class="col-form-label">Student Name</label>
+			<input class="form-control mb-3" id="name" @bind-value="student.Name"/>
+			<label for="number" class="col-form-label">Student Number</label>
+			<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
+			<label for="number" class="col-form-label">Grammer Mark</label>
+			<input class="form-control mb-3" id="number" @bind-value="student.GrammerMark" disabled/>
+			<label for="number" class="col-form-label">Listening Mark</label>
+			<input class="form-control mb-3" id="number" @bind-value="student.ListeningMark" disabled/>
+			<label for="number" class="col-form-label">Writing Mark</label>
+			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
+			<label for="number" class="col-form-label">Speaking Mark</label>
+			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+			<button type="submit" class="btn btn-primary m-2">Edit</button>
+		</EditForm>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public string? StudentId { get; set; }
+	private Student? student = new Student();
+	protected override async Task OnInitializedAsync()
+	{
+		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{StudentId}");
+	}
+	async Task Edit()
+	{
+		var respond = await Http.PutAsJsonAsync<Student>("/api/Student/", student);
+		navigationManager.NavigateTo("/admin/student");
+
+	}
+}

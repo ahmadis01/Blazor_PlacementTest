@@ -1,0 +1,11 @@
+﻿.input-group{
+    width:100%;
+    margin: 10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    
+}
+.form-control{
+    width:500px;
+}

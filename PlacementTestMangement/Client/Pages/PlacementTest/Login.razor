@@ -1,0 +1,41 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@layout EmptyLayout
+
+<img class="background" src="././images/background.jpg" >
+	<div class="container">	
+		<div class="recovery">
+			<EditForm Model="@student" OnValidSubmit="@Recovery">
+				<input @bind-value="student.Id" class="w-50" type="text" />
+				<button type="submit"class=" btn-primary">R</button>
+			</EditForm>
+		</div>
+		<div class="form">
+			<EditForm Model="@student" class="card p-4" id="form" OnValidSubmit="@Start">
+				<img class="Logo" src="././images/Logo.jpg"/>	
+				<span class="mx-auto fw-bold fs-4">Placement Test</span>
+				<label for="name" class="col-form-label">Full Name</label>
+				<input class="form-control mb-3" id="name" @bind-value="student.Name"/>
+				<label for="number" class="col-form-label">Phone Number</label>
+				<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
+				<DataAnnotationsValidator />
+				<ValidationSummary />
+				<button type="submit" class="btn btn-primary m-2">Start</button>
+			</EditForm>
+			<span class="dev">Developed by Ahmad Ismail</span>
+		</div>
+	</div>
+@code {
+	private Student student { get; set; } = new Student();
+	private  async void Start(){
+		var respond =await  Http.PostAsJsonAsync("/api/student",student);
+		var requestedStudent =await respond.Content.ReadFromJsonAsync<Student>();
+		navigationManager.NavigateTo($"/placementTest/listening/{requestedStudent.Id}" );
+	}
+	private async void Recovery()
+	{
+		navigationManager.NavigateTo($"/placementTest/listening/{student.Id}");
+
+	}
+}

@@ -1,0 +1,77 @@
+﻿@page "/admin/question/{QuestionId}"
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+<div class="container">	
+	<div class="form">
+		<EditForm Model="@question" class="card p-4" id="form" OnValidSubmit="@Edit">
+			<span class="mx-auto fw-bold fs-4">Add Question</span>
+			<label for="name" class="col-form-label">Question Text</label>
+			<input class="form-control mb-3" id="name" @bind-value="question.QuestionText"/>
+			<label for="number" class="col-form-label">Question Mark</label>
+			<input class="form-control mb-3" id="number" @bind-value="question.Mark"/>
+			<label for="type" class="col-form-label">Question Type</label>
+
+			<InputSelect class="select" @bind-Value="question.QuestionTypeId" style="width:100px;">
+				@foreach (var questionType in questionTypes)
+				{
+					<option value="@questionType.Id">@questionType.Name</option>
+				}
+			</InputSelect>
+			<sapn>Answers:</sapn>
+			<div class="answers">
+						<span>A.</span><InputText class="answer" type="text" @bind-Value="question.Answers[0].AnswerText"></InputText>
+						<span>B.</span><InputText class="answer" type="text" @bind-Value="question.Answers[1].AnswerText"></InputText>
+						<span>C.</span><InputText class="answer" type="text" @bind-Value="question.Answers[2].AnswerText"></InputText>
+						<span>D.</span><InputText class="answer" type="text" @bind-Value="question.Answers[3].AnswerText"></InputText>
+			</div>
+			<div class="answers">
+				<div class="mx-3"><span>A.</span><InputCheckbox type="text" @bind-Value="question.Answers[0].IsCorrect"></InputCheckbox></div>
+				<div class="mx-3"><span>B.</span><InputCheckbox type="text" @bind-Value="question.Answers[1].IsCorrect"></InputCheckbox></div>
+				<div class="mx-3"><span>C.</span><InputCheckbox type="text" @bind-Value="question.Answers[2].IsCorrect"></InputCheckbox></div>
+				<div class="mx-3"><span>D.</span><InputCheckbox  type="text" @bind-Value="question.Answers[3].IsCorrect"></InputCheckbox></div>
+			</div>
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+			<button type="submit" class="btn btn-primary m-2">Edit</button>
+		</EditForm>
+	</div>
+</div>
+<style>
+	.container{
+		display:flex;
+		justify-content:center;
+	}
+	.form {
+		justify-content: center;
+		width: 500px;
+	}
+	.answers{
+
+		display:flex;
+		justify-content:center;
+		margin:20px
+
+	}
+		.answers .answer {
+			width: 70px;
+			margin: 0px 10px;
+		}
+
+</style>
+@code{
+	[Parameter] 
+	public string? QuestionId { get; set; }
+	private Question? question = new Question();
+	private QuestionType[]? questionTypes;
+	protected override async Task OnInitializedAsync(){
+		question =await Http.GetFromJsonAsync<Question>($"/api/Question/{QuestionId}");
+		questionTypes = await Http.GetFromJsonAsync<QuestionType[]>("/api/questionType");
+	}
+	 async Task Edit(){
+		var respond = await Http.PutAsJsonAsync<Question>("/api/Question/",question);
+		navigationManager.NavigateTo("/admin/question");
+
+	}
+}	
+

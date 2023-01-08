@@ -1,0 +1,103 @@
+﻿@page "/placementTest/grammer/{studentId}"
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@layout MainLayout
+
+@if (questionId - listeningQuestions.Length <= grammerQuestions.Length)
+{
+	answer.QuestionId = listeningQuestions.Length + questionId ;
+	<span class="title">Grammer</span> 
+	<span class="timer">@(
+	new DateTime(countDown.Ticks).ToString("mm:ss")
+	)</span>
+	<div class="paper m-xxl-4">
+		<EditForm Model="@answer" OnValidSubmit="@submit">
+
+			<p class="fs-4">@questionId . @grammerQuestions[questionId-1].QuestionText</p>
+			<div class="d-flex justify-content-evenly">
+				<InputRadioGroup @bind-Value="answer.AnswerId">
+					@foreach (var answer in grammerQuestions[questionId - 1].Answers)
+					{
+						@if (!String.IsNullOrEmpty(answer.AnswerText))
+						{
+							<InputRadio  class="btn-check" id="@answer.Id" Value="answer.Id"></InputRadio>
+							<label class="btn btn-outline-primary" for="@answer.Id">@answer.AnswerText</label>
+						}
+					}
+				</InputRadioGroup>
+			</div>
+			@{
+				if (answer.AnswerId != 0) isDisabled = false;
+				else isDisabled = true;
+			}
+			<input class="btn btn-primary d-block mx-auto my-4 w-50" disabled="@isDisabled" type="submit" value="Next"/>
+			<input class="btn btn-danger d-block mx-auto my-4 w-15"  @onclick="@skip" value="Skip"/>
+		</EditForm>			
+	</div>
+} else if((student.GrammerMark+student.ListeningMark)/2 >= 15){
+	<span class="title">Writing</span> 
+	<div class="paper m-xxl-4">
+		<p class="fs-4">@writingQuestion[0].QuestionText</p>
+	</div>
+}
+else
+{
+		<div class="paper m-xxl-4">
+			<p class="fs-4 fw-bolder">Placement Test End.</p>
+			<p class="fs-4 fw-bolder">Welcome To Ousos Company</p>
+			<img src="./images/Logo2.png">
+		</div>
+}
+@code {
+	public int questionId;
+	[Parameter]
+	public string? studentId { get; set; }
+	private Student student { get; set; }
+	protected bool isDisabled = true;
+	private Question[]? grammerQuestions { get; set; }
+	private Question[]? listeningQuestions { get; set; }
+	private Question[]? writingQuestion { get; set; }
+	private StudentAnswerDto? answer { get; set; } = new StudentAnswerDto();
+	private System.Threading.Timer? timer;
+	private TimeSpan countDown;
+	protected override async Task OnInitializedAsync()
+	{
+		answer.StudentId = Int16.Parse(studentId);
+		grammerQuestions = await Http.GetFromJsonAsync<Question[]>($"/api/Question/getByQuestionType/1");
+		listeningQuestions = await Http.GetFromJsonAsync<Question[]>($"/api/Question/getByQuestionType/2");
+		writingQuestion = await Http.GetFromJsonAsync<Question[]>($"/api/Question/getByQuestionType/3");
+		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
+		questionId = student.CurrentQuestion - listeningQuestions.Length ;
+		countDown = student.Timer;
+		//timer
+		timer = new System.Threading.Timer(async (object? stateInfo) =>
+		{
+			await sessionStorage.SetItemAsStringAsync("timer", countDown.ToString());
+			countDown = countDown - TimeSpan.FromSeconds(1);
+			answer.Timer = countDown;
+			if (countDown == TimeSpan.Zero)
+			{
+				navigationManager.NavigateTo("/");
+			}
+			StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+		}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
+	}
+	private async Task submit()
+	{
+		await Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/submitAnswer", answer);
+		questionId = questionId + 1;
+		answer.AnswerId = 0;
+	}
+	private void check()
+	{
+		isDisabled = false;
+	}
+	private async Task skip()
+	{
+		await Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/skip", answer);
+		questionId = questionId + 1;
+		answer.AnswerId = 0;
+	}
+
+}

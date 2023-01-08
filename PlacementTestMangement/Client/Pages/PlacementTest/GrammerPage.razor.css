@@ -1,0 +1,33 @@
+﻿.title {
+    font-weight: bold;
+    font-size: 35px;
+    margin: 20px;
+}
+
+.answers {
+    display: flex;
+    align-items: center;
+}
+
+.paper {
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    flex-direction:column;
+}
+
+.answer {
+    margin: 0px 40px 0px 0px;
+}
+
+.timer {
+    padding: 4px;
+    float: right;
+    margin: 10px;
+    font-size: 25px;
+    border: 1px crimson solid;
+    background-color: crimson;
+    border-radius: 15px;
+    color: white;
+}
