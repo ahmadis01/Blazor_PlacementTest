@@ -171,6 +171,9 @@ namespace PlacementTestMangement.Server.Migrations
                     b.Property<TimeSpan>("Timer")
                         .HasColumnType("time");
 
+                    b.Property<int>("TotalScore")
+                        .HasColumnType("int");
+
                     b.Property<int>("WritingMark")
                         .HasColumnType("int");
 

@@ -13,13 +13,15 @@
 			<label for="number" class="col-form-label">Student Number</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
 			<label for="number" class="col-form-label">Grammer Mark</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.GrammerMark" disabled/>
+			<input class="form-control mb-3" id="number" @bind-value="student.GrammerMark" />
 			<label for="number" class="col-form-label">Listening Mark</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.ListeningMark" disabled/>
+			<input class="form-control mb-3" id="number" @bind-value="student.ListeningMark" />
 			<label for="number" class="col-form-label">Writing Mark</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
 			<label for="number" class="col-form-label">Speaking Mark</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
+			<label for="number" class="col-form-label">Total Score</label>
+			<input class="form-control mb-3" id="number" @bind-value="student.TotalScore"/>
 			<DataAnnotationsValidator />
 			<ValidationSummary />
 			<button type="submit" class="btn btn-primary m-2">Edit</button>

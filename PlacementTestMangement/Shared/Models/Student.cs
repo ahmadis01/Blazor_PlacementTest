@@ -13,6 +13,7 @@ namespace PlacementTestMangement.Shared.Models
         public int GrammerMark { get; set; } = 0;
         public int WritingMark { get; set; } = 0;
         public int SpeakingMark { get; set; } = 0;
+        public int TotalScore { get; set; } = 0;
         public int CurrentQuestion { get; set; } = 1;
         public DateTime StartTime { get; set; }= DateTime.Now;
         public TimeSpan Timer { get; set; } = new TimeSpan(0, 0, 40, 0, 0);

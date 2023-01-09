@@ -12,7 +12,7 @@ using PlacementTestMangement.Server.Data;
 namespace PlacementTestMangement.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221002214606_InitialCreate")]
+    [Migration("20230109151518_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -172,6 +172,9 @@ namespace PlacementTestMangement.Server.Migrations
 
                     b.Property<TimeSpan>("Timer")
                         .HasColumnType("time");
+
+                    b.Property<int>("TotalScore")
+                        .HasColumnType("int");
 
                     b.Property<int>("WritingMark")
                         .HasColumnType("int");

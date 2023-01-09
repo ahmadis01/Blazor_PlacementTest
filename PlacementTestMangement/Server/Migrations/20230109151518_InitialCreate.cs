@@ -49,6 +49,7 @@ namespace PlacementTestMangement.Server.Migrations
                     GrammerMark = table.Column<int>(type: "int", nullable: false),
                     WritingMark = table.Column<int>(type: "int", nullable: false),
                     SpeakingMark = table.Column<int>(type: "int", nullable: false),
+                    TotalScore = table.Column<int>(type: "int", nullable: false),
                     CurrentQuestion = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Timer = table.Column<TimeSpan>(type: "time", nullable: false)
