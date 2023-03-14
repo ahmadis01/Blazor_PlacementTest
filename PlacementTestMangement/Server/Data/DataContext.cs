@@ -14,6 +14,7 @@ namespace PlacementTestMangement.Server.Data
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Record> Records { get; set; }
         public DbSet<Text> Texts { get; set; }
+        public DbSet<Level> Levels { get; set; }
         public DbSet<QuestionType> QuestionTypes{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

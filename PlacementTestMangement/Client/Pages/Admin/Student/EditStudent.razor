@@ -10,20 +10,31 @@
 			<span class="mx-auto fw-bold fs-4">Edit Student</span>
 			<label for="name" class="col-form-label">Student Name</label>
 			<input class="form-control mb-3" id="name" @bind-value="student.Name"/>
+			<label for="name" class="col-form-label">Timer</label>
+			<input class="form-control mb-3" id="name" @bind-value="student.Timer"/>
+			<label for="name" class="col-form-label">Current Question</label>
+			<input class="form-control mb-3" id="name" @bind-value="student.CurrentQuestion"/>
 			<label for="number" class="col-form-label">Student Number</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
 			<label for="number" class="col-form-label">Grammer Mark</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.GrammerMark" />
+			<input class="form-control mb-3" id="number" @bind-value="student.GrammerMark" disabled/>
 			<label for="number" class="col-form-label">Listening Mark</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.ListeningMark" />
-			<label for="number" class="col-form-label">Writing Mark</label>
+			<input class="form-control mb-3" id="number" @bind-value="student.ListeningMark" disabled/>
+			<label for="number" class="col-form-label">Writing Mark From 10</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
-			<label for="number" class="col-form-label">Speaking Mark</label>
+			<label for="number" class="col-form-label">Speaking Mark From 10</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
 			<label for="number" class="col-form-label">Total Score</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.TotalScore"/>
+			<input class="form-control mb-3" id="number" value="@(student.GrammerMark + @student.ListeningMark + @student.SpeakingMark+@student.SpeakingMark)" disabled/>
+			<label for="number" class="col-form-label">Level</label>
+			<InputSelect class="form-control" @bind-Value="student.Level">
+				@foreach (var level in levels)
+				{
+						<option value="@level.LevelName">@level.LevelName</option>
+				}
+			</InputSelect>
 			<DataAnnotationsValidator />
-			<ValidationSummary />
+			<ValidationSummary />	
 			<button type="submit" class="btn btn-primary m-2">Edit</button>
 		</EditForm>
 	</div>
@@ -33,14 +44,15 @@
 	[Parameter]
 	public string? StudentId { get; set; }
 	private Student? student = new Student();
+	private List<Level> levels;
 	protected override async Task OnInitializedAsync()
 	{
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{StudentId}");
+		levels = await Http.GetFromJsonAsync<List<Level>>($"/api/Setting/level");
 	}
 	async Task Edit()
 	{
 		var respond = await Http.PutAsJsonAsync<Student>("/api/Student/", student);
 		navigationManager.NavigateTo("/admin/student");
-
 	}
 }

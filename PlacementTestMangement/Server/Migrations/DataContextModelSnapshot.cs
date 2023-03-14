@@ -151,6 +151,9 @@ namespace PlacementTestMangement.Server.Migrations
                     b.Property<int>("GrammerMark")
                         .HasColumnType("int");
 
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ListeningMark")
                         .HasColumnType("int");
 
@@ -160,7 +163,8 @@ namespace PlacementTestMangement.Server.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("SpeakingMark")
                         .HasColumnType("int");
@@ -170,9 +174,6 @@ namespace PlacementTestMangement.Server.Migrations
 
                     b.Property<TimeSpan>("Timer")
                         .HasColumnType("time");
-
-                    b.Property<int>("TotalScore")
-                        .HasColumnType("int");
 
                     b.Property<int>("WritingMark")
                         .HasColumnType("int");

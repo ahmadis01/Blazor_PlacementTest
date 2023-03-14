@@ -19,8 +19,7 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IQuestionTypeRepository, QuestionTypeRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerRepositroy, AnswerRepository>();
-
-
+builder.Services.AddScoped<ISettingRepository, SettingRepository>();
 
 
 var app = builder.Build();
@@ -34,6 +33,7 @@ else
 {
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseWebAssemblyDebugging();
     app.UseHsts();
 }
 

@@ -44,12 +44,12 @@ namespace PlacementTestMangement.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     ListeningMark = table.Column<int>(type: "int", nullable: false),
                     GrammerMark = table.Column<int>(type: "int", nullable: false),
                     WritingMark = table.Column<int>(type: "int", nullable: false),
                     SpeakingMark = table.Column<int>(type: "int", nullable: false),
-                    TotalScore = table.Column<int>(type: "int", nullable: false),
+                    Level = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CurrentQuestion = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Timer = table.Column<TimeSpan>(type: "time", nullable: false)

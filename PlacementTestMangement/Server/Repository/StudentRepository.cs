@@ -3,6 +3,8 @@ using PlacementTestMangement.Server.Interfaces;
 using PlacementTestMangement.Shared.Models;
 using PlacementTestMangement.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using PlacementTestMangement.Client.Pages.Admin;
 
 namespace PlacementTestMangement.Server.Repository
 {
@@ -57,19 +59,23 @@ namespace PlacementTestMangement.Server.Repository
         public bool SubmitAnswer(StudentAnswerDto answer)
         {
             Student student = _context.Students.Where(x => x.Id == answer.StudentId).FirstOrDefault();
+            Answer? correctAnswer = _context.Answers.Where(x => x.Id == answer.AnswerId).FirstOrDefault();
             Question question = _context.Questions.Where(x => x.Id == answer.QuestionId).FirstOrDefault();
-            Answer? correctAnswer = _context.Answers.Where(x => x.QuestionId == answer.QuestionId && x.IsCorrect == true).FirstOrDefault();
-            if (correctAnswer != null)
+            if (correctAnswer.IsCorrect)
             {
-                student.GrammerMark++;
-                student.CurrentQuestion = answer.QuestionId + 1;
+                if (question.QuestionTypeId == 1)
+                    student.GrammerMark++;
+                else
+                    student.ListeningMark++;
+                student.Timer = answer.Timer;
+                student.CurrentQuestion = student.CurrentQuestion + 1;
                 _context.Update(student);
                 _context.SaveChanges();
                 return true;
             }
             else
             {
-                student.CurrentQuestion = answer.QuestionId + 1;
+                student.CurrentQuestion = student.CurrentQuestion + 1;
                 student.Timer = answer.Timer;
                 _context.Update(student);
                 _context.SaveChanges();
@@ -79,7 +85,7 @@ namespace PlacementTestMangement.Server.Repository
         public bool SkipQuestion(StudentAnswerDto answer)
         {
             Student student = _context.Students.Where(x => x.Id ==answer.StudentId).FirstOrDefault();
-            student.CurrentQuestion = answer.QuestionId + 1;
+            student.CurrentQuestion ++;
             student.Timer = answer.Timer;
             _context.Update(student);
             _context.SaveChanges();
