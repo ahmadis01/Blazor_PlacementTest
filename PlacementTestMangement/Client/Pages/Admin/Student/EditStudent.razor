@@ -20,9 +20,9 @@
 			<input class="form-control mb-3" id="number" @bind-value="student.GrammerMark" disabled/>
 			<label for="number" class="col-form-label">Listening Mark</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.ListeningMark" disabled/>
-			<label for="number" class="col-form-label">Writing Mark From 10</label>
+			<label for="number" class="col-form-label">Writing Mark out of 10</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
-			<label for="number" class="col-form-label">Speaking Mark From 10</label>
+			<label for="number" class="col-form-label">Speaking Mark out of 10</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
 			<label for="number" class="col-form-label">Total Score</label>
 			<input class="form-control mb-3" id="number" value="@(student.GrammerMark + @student.ListeningMark + @student.SpeakingMark+@student.SpeakingMark)" disabled/>

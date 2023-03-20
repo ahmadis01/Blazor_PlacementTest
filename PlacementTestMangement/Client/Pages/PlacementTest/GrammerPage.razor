@@ -23,7 +23,7 @@
 					{
 						@if (!String.IsNullOrEmpty(answer.AnswerText))
 						{
-							<InputRadio  class="btn-check" id="@answer.Id" Value="answer.Id"></InputRadio>
+							<InputRadio class="btn-check" id="@answer.Id" Value="answer.Id"></InputRadio>
 							<label class="btn btn-outline-primary" for="@answer.Id">@answer.AnswerText</label>
 						}
 					}
@@ -37,10 +37,40 @@
 			<input class="btn btn-danger d-block mx-auto my-4 w-15"  @onclick="@skip" value="Skip"/>
 		</EditForm>			
 	</div>
-} else if((student.GrammerMark + student.ListeningMark)/2 >= 15){
-	<span class="title">Writing</span> 
+} else if(student.CurrentQuestion - listeningQuestions.Length <= grammerQuestions.Length +1){
+	{
+		questionId = student.CurrentQuestion - listeningQuestions.Length - grammerQuestions.Length;
+	};
+	<span class="title">Reading</span>
+		<span class="timer">@(
+	new DateTime(countDown.Ticks).ToString("mm:ss")
+	)</span>
 	<div class="paper m-xxl-4">
-		<p class="fs-4">@writingQuestion[0].QuestionText</p>
+			<EditForm Model="@answersDto" OnValidSubmit="@submitReadingAnswers">
+			@foreach (var sentence in texts)
+			{
+				answersDto.Answers.Add(new ReadingAnswerDto { AnswerId = 0, QuestionId = 0 });
+				<p class="fs-4 ">@sentence
+					@if(readingQuestion.Length != questionId -1)
+						@foreach (var answer in readingQuestion[questionId - 1].Answers)
+						{
+							answersDto.StudentId = student.Id;
+							answersDto.Timer = countDown;
+							answersDto.Answers[questionId - 1].QuestionId = readingQuestion[questionId - 1].Id;
+							@if (!String.IsNullOrEmpty(answer.AnswerText))
+							{
+								<input type="radio" name="anaswers_for_@questionId.ToString()" class="btn-check" id="@answer.Id"
+								@onchange=@(()=>OnValueChange(answer.Id)) />
+								<label class="btn btn-outline-primary" for="@answer.Id">@answer.AnswerText</label>
+							}
+						}
+						
+					@{questionId = questionId + 1;}
+				</p>	
+			}
+			<input class="btn btn-primary d-block mx-auto my-4 w-50" type="submit" value="Submit"/>
+		</EditForm>
+
 	</div>
 }
 else
@@ -57,9 +87,12 @@ else
 	public string? studentId { get; set; }
 	private Student student { get; set; }
 	protected bool isDisabled = true;
+	string[] texts;
+	List<Answer> answers;
 	private Question[]? grammerQuestions { get; set; }
 	private Question[]? listeningQuestions { get; set; }
-	private Question[]? writingQuestion { get; set; }
+	private Question[]? readingQuestion { get; set; }
+	private Text? text{ get; set; }
 	private StudentAnswerDto? answerDto { get; set; } = new StudentAnswerDto();
 	private System.Threading.Timer? timer;
 	private TimeSpan countDown;
@@ -68,8 +101,11 @@ else
 		answerDto.StudentId = Int16.Parse(studentId);
 		grammerQuestions = await Http.GetFromJsonAsync<Question[]>($"/api/Question/getByQuestionType/1");
 		listeningQuestions = await Http.GetFromJsonAsync<Question[]>($"/api/Question/getByQuestionType/2");
-		writingQuestion = await Http.GetFromJsonAsync<Question[]>($"/api/Question/getByQuestionType/3");
+		readingQuestion = await Http.GetFromJsonAsync<Question[]>($"/api/Question/getByQuestionType/3");
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
+		answers = await Http.GetFromJsonAsync<List<Answer>>($"/api/Answer");
+		text = await Http.GetFromJsonAsync<Text>($"/api/Text/1");
+		texts = text.TheText.Split("_");
 		questionId = student.CurrentQuestion - listeningQuestions.Length ;
 		countDown = student.Timer;
 		//timer
@@ -87,8 +123,7 @@ else
 	}
 	private async Task submit()
 	{
-
-		 Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/submitAnswer", answerDto);
+		Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/submitAnswer", answerDto);
 		student.CurrentQuestion++;
 		answerDto.AnswerId = 0;
 	}
@@ -98,9 +133,31 @@ else
 	}
 	private async Task skip()
 	{
-		 Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/skip", answerDto);
+		Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/skip", answerDto);
 		student.CurrentQuestion++;
 		answerDto.AnswerId = 0;
 	}
-
+	ReadingAnswersDto answersDto = new ReadingAnswersDto()
+		{
+			StudentId = 1,
+			Timer = new TimeSpan(0, 0, 0, 0, 0),
+			Answers = new List<ReadingAnswerDto>()
+		};
+	private void OnValueChange(int id )
+	{
+		/*var a = new ReadingAnswerDto();
+		a.QuestionId = questionId;
+		a.AnswerId = id;
+		answersDto.Answers.Add(a);*/
+		int question;
+		question = answers.Where(a => a.Id == id).FirstOrDefault().QuestionId;
+		answersDto.Answers.Where(a => a.QuestionId == question).FirstOrDefault().AnswerId =id;
+		Console.WriteLine(id);
+		Console.WriteLine(question);
+	}
+	private async Task submitReadingAnswers()
+	{
+		Http.PutAsJsonAsync<ReadingAnswersDto>($"/api/student/subimtReadingAnswers", answersDto);
+		navigationManager.NavigateTo($"/placementTest/grammer/{studentId}",true);
+	}
 }

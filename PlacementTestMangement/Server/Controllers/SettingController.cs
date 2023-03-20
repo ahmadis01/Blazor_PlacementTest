@@ -17,7 +17,7 @@ namespace PlacementTestMangement.Server.Controllers
 		}
 
 		[HttpGet("level")]
-		public IActionResult GetLevels()
+		public IActionResult GetLevels()	
 		{
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

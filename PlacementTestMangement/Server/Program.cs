@@ -20,6 +20,8 @@ builder.Services.AddScoped<IQuestionTypeRepository, QuestionTypeRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerRepositroy, AnswerRepository>();
 builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+builder.Services.AddScoped<ITextRepository, TextRepository>();
+
 
 
 var app = builder.Build();

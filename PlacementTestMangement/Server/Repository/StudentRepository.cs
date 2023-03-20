@@ -91,5 +91,26 @@ namespace PlacementTestMangement.Server.Repository
             _context.SaveChanges();
             return true;
         }
+        public bool SubmitReadingAnswers(ReadingAnswersDto answersDto)
+        {
+            Student student = _context.Students.Where(x => x.Id == answersDto.StudentId).FirstOrDefault();
+            foreach (var answer in answersDto.Answers)
+            {
+                if (answer.AnswerId != 0)
+                {
+                    Answer? correctAnswer = _context.Answers.Where(x => x.Id == answer.AnswerId).FirstOrDefault();
+                    Question question = _context.Questions.Where(x => x.Id == answer.QuestionId).FirstOrDefault();
+                    if (correctAnswer.IsCorrect)
+                    {
+                        student.GrammerMark++;
+                    }
+                }    
+            }
+            student.CurrentQuestion = student.CurrentQuestion+30;
+            student.Timer = answersDto.Timer;
+            _context.Update(student);
+            _context.SaveChanges();
+            return true;
+        }
     }
 }

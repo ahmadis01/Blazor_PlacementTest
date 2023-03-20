@@ -41,7 +41,7 @@ namespace PlacementTestMangement.Server.Data
                 new QuestionType
                 {
                     Id = 3,
-                    Name = "Writing",
+                    Name = "Reading",
                     Mark = 10,
                     Minute = 15,
                 });

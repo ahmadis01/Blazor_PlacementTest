@@ -80,5 +80,11 @@ namespace PlacementTestMangement.Server.Controllers
             _studentRepository.SkipQuestion(answer);
             return Ok();
         }
+        [HttpPut("/api/student/subimtReadingAnswers")]
+        public IActionResult SubmitReadingAnswers(ReadingAnswersDto answersDto)
+        {
+            var result = _studentRepository.SubmitReadingAnswers(answersDto);
+            return Ok();
+        }
     }
 }
