@@ -29,9 +29,9 @@
 @code {
 	private Student student { get; set; } = new Student();
 	private  async void Start(){
-		var respond =await  Http.PostAsJsonAsync("/api/student",student);
+		var respond = await  Http.PostAsJsonAsync("/api/student",student);
 		var requestedStudent =await respond.Content.ReadFromJsonAsync<Student>();
-		navigationManager.NavigateTo($"/placementTest/listening/{requestedStudent.Id}" );
+		navigationManager.NavigateTo($"/placementTest/listening/{student.Id}");
 	}
 	private async void Recovery()
 	{

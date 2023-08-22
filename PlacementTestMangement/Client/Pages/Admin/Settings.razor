@@ -39,10 +39,7 @@
 	{
 		levels = await Http.GetFromJsonAsync<List<Level>>("/api/setting/level");
 	}
-	private async Task AddLevel()
-	{
 
-	}
 	private async void Delete(int id )
 	{
 		var respond = await Http.DeleteAsync($"/api/setting/deleteLevel/{id}");
