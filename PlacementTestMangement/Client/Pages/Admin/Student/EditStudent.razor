@@ -17,15 +17,13 @@
 			<label for="number" class="col-form-label">Student Number</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
 			<label for="number" class="col-form-label">Grammer Mark</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.GrammerMark" disabled/>
-			<label for="number" class="col-form-label">Listening Mark</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.ListeningMark" disabled/>
+			<input class="form-control mb-3" id="number" @bind-value="student.PlacementTestMark" disabled/>
 			<label for="number" class="col-form-label">Writing Mark out of 10</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
 			<label for="number" class="col-form-label">Speaking Mark out of 10</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
 			<label for="number" class="col-form-label">Total Score</label>
-			<input class="form-control mb-3" id="number" value="@(student.GrammerMark + @student.ListeningMark + @student.SpeakingMark+@student.SpeakingMark)" disabled/>
+			<input class="form-control mb-3" id="number" value="@(student.PlacementTestMark + @student.SpeakingMark+@student.SpeakingMark)" disabled/>
 			<label for="number" class="col-form-label">Level</label>
 			<InputSelect class="form-control" @bind-Value="student.Level">
 				@foreach (var level in levels)

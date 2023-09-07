@@ -5,6 +5,8 @@ using PlacementTestMangement.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PlacementTestMangement.Client.Pages.Admin;
+using PlacementTestMangement.Shared.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace PlacementTestMangement.Server.Repository
 {
@@ -38,6 +40,25 @@ namespace PlacementTestMangement.Server.Repository
             return respond;
 
         }
+        public int UpdateStudentPersonalData(PersonalDataDto dto)
+        {
+            Student student = new Student
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Address = dto.Address,
+                BirthDate = dto.BirthDate,
+                PhoneNumber = dto.PhoneNumber,
+                HomeNumber = dto.HomenNumber,
+                Age = dto.Age,
+                SchoolOrWork = dto.SchoolOrWork,
+                ForEmergenciesName = dto.ForEmergenciesName,
+                ForEmergenciesNumber = dto.ForEmergenciesNumber,
+            };
+            _context.Update(student);
+            _context.SaveChanges();
+            return student.Id;
+        }
         public bool DeleteStudent(int id)
         {
             _context.Remove(id);
@@ -58,16 +79,19 @@ namespace PlacementTestMangement.Server.Repository
         }
         public bool SubmitAnswer(StudentAnswerDto answer)
         {
+            StudentAnswers studentAnswer = new StudentAnswers
+            {
+                AnswerId = answer.AnswerId,
+                QuestionId = answer.QuestionId,
+                StudentId = answer.StudentId,
+            };
+            _context.Add(studentAnswer);
             Student student = _context.Students.Where(x => x.Id == answer.StudentId).FirstOrDefault();
             Answer? correctAnswer = _context.Answers.Where(x => x.Id == answer.AnswerId).FirstOrDefault();
             Question question = _context.Questions.Where(x => x.Id == answer.QuestionId).FirstOrDefault();
             if (correctAnswer.IsCorrect)
             {
-                if (question.QuestionTypeId == 1)
-                    student.GrammerMark++;
-                else
-                    student.ListeningMark++;
-                student.Timer = answer.Timer;
+                student.PlacementTestMark++;
                 student.CurrentQuestion = student.CurrentQuestion + 1;
                 _context.Update(student);
                 _context.SaveChanges();
@@ -76,7 +100,6 @@ namespace PlacementTestMangement.Server.Repository
             else
             {
                 student.CurrentQuestion = student.CurrentQuestion + 1;
-                student.Timer = answer.Timer;
                 _context.Update(student);
                 _context.SaveChanges();
                 return false;
@@ -102,12 +125,20 @@ namespace PlacementTestMangement.Server.Repository
                     Question question = _context.Questions.Where(x => x.Id == answer.QuestionId).FirstOrDefault();
                     if (correctAnswer.IsCorrect)
                     {
-                        student.GrammerMark++;
+                        student.PlacementTestMark++;
                     }
                 }    
             }
             student.CurrentQuestion = student.CurrentQuestion+30;
             student.Timer = answersDto.Timer;
+            _context.Update(student);
+            _context.SaveChanges();
+            return true;
+        }
+        public bool UpdateTimer(TimerDto timerDto)
+        {
+            Student student = _context.Students.FirstOrDefault(s => s.Id == timerDto.StudentId);
+            student.Timer = timerDto.Timer;
             _context.Update(student);
             _context.SaveChanges();
             return true;

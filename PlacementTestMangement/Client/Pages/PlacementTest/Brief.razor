@@ -1,4 +1,4 @@
-﻿@page "/placementTest/brief"
+﻿@page "/placementTest/brief/{studentId}"
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 @layout MainLayout
@@ -21,10 +21,15 @@
 	<p class="mx-xxl-5">
 		A separate Oral Placement Test is included. This test consists of an interview based on conversational prompts to be presented by the interviewer.
 	</p>
-	<button type="submit" class="btn btn-primary m-2 w-25" >Let's Start</button>
+	<button type="submit" class="btn btn-primary m-2 w-25" @onclick="@Start">Let's Start</button>
 </div>
 
 
 @code {
-
+	[Parameter]
+	public string studentId { get; set; }
+	private async Task Start()
+	{
+		navigationManager.NavigateTo($"/placementTest/personal-data/{studentId}");
+	}
 }

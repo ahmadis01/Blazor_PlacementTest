@@ -15,5 +15,8 @@ namespace PlacementTestMangement.Server.Interfaces
         bool UpdateStudent(Student student);
         ICollection<Student> SearchStudents(string searchText);
         bool SubmitReadingAnswers(ReadingAnswersDto answersDto);
-    }
+        int UpdateStudentPersonalData(PersonalDataDto dto);
+		bool UpdateTimer(TimerDto timerDto);
+
+	}
 }

@@ -1,10 +1,74 @@
-﻿@page "/placementTest/personalhomedata"
+﻿@page "/placementTest/personal-data/{studentId}"
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 @layout MainLayout
 
-<h3>PersonalDataForm</h3>
+<div class="d-flex justify-content-center flex-column">
+	<h3>Personal Data</h3>
+    <EditForm Model="@personalData" class=" p-4" id="form" OnValidSubmit="@AddPersonalData">
+        <div class="mb-3 mx-xxl-5">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" @bind-value="personalData.Name">
+        </div>
+        <div class="mb-3 d-flex justify-content-around">
+            <div class="d-inline">
+                <label class="form-label">Birth Date</label>
+                <input type="date" class="form-control" @bind-value="personalData.BirthDate">
+            </div>
+            <div class="d-inline">
+                <label class="form-label">Age at last birthday</label>
+                <input type="number" class="form-control" @bind-value="personalData.Age">
+            </div>
+        </div>
+        <div class="mb-3 mx-xxl-5">
+            <label class="form-label">School/Work</label>
+            <input type="text" class="form-control" @bind-value="personalData.SchoolOrWork">
+        </div>
+        <div class="mb-3 mx-xxl-5">
+            <label class="form-label">Home Address</label>
+            <textarea type="text-area" class="form-control" @bind="personalData.Address"></textarea>
+        </div>
+        <div class="mb-3 d-flex justify-content-evenly">
+            <span>Telephone:</span>
+            <div class="d-inline">
+                <label class="form-label">Home</label>
+                <input type="text" class="form-control" @bind-value="personalData.HomenNumber">
+            </div>
+            <div class="d-inline">
+                <label class="form-label">Moblie</label>
+                <input type="text" class="form-control" @bind-value="personalData.PhoneNumber">
+            </div>
+        </div>
+        <div class="mb-3 d-flex">
+            <span>For emergencies, call:</span>
+            <div class="d-inline mx-5">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" @bind-value="personalData.ForEmergenciesName">
+            </div>
+            <div class="d-inline mx-5">
+                <label class="form-label">Telephone Number</label>
+                <input type="text" class="form-control" @bind-value="personalData.ForEmergenciesNumber">
+            </div>
+        </div>
+        <div class="d-flex justify-content-center align-items-center">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <button type="submit" class="btn btn-primary w-25">Submit</button>
+        </div>
+    </EditForm>
+</div>
 
 @code {
-
+    [Parameter]
+    public string studentId { get; set; }
+    private PersonalDataDto personalData = new PersonalDataDto()
+    {
+        BirthDate = DateTime.Now
+    };
+    async Task AddPersonalData()
+    {
+        personalData.Id = Int32.Parse(studentId);
+        var respond = await Http.PutAsJsonAsync<PersonalDataDto>("/api/student/updatePersonalData", personalData);
+        navigationManager.NavigateTo($"/placementTest/listening/{studentId}");
+    }
 }

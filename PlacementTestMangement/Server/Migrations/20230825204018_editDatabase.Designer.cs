@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlacementTestMangement.Server.Data;
 
@@ -11,9 +12,10 @@ using PlacementTestMangement.Server.Data;
 namespace PlacementTestMangement.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230825204018_editDatabase")]
+    partial class editDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,26 +116,8 @@ namespace PlacementTestMangement.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("CurrentQuestion")
                         .HasColumnType("int");
-
-                    b.Property<string>("ForEmergenciesName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ForEmergenciesNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HomeNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Level")
                         .HasColumnType("nvarchar(max)");
@@ -149,9 +133,6 @@ namespace PlacementTestMangement.Server.Migrations
 
                     b.Property<int>("PlacementTestMark")
                         .HasColumnType("int");
-
-                    b.Property<string>("SchoolOrWork")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SpeakingMark")
                         .HasColumnType("int");

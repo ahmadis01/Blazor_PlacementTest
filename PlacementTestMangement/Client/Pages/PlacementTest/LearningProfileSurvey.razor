@@ -1,0 +1,79 @@
+﻿@page "/placementTest/learning-profile-survey/{studentId}"
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@layout MainLayout
+
+<span class="title">Learning Profile Servey</span>
+<div class="d-flex justify-content-center flex-column mx-xxl-5">
+	@{
+		int i = 0; 
+	}
+		@foreach (var item in questions)
+		{
+		<EditForm Model="@answerDto">
+
+			@{
+				answerDto.Add(new StudentProfileAnswers
+				{
+					AnswerId = 0,
+					QuestionId = item.Id,
+					AnswerText = string.Empty,
+					QuestionType = item.QuestionType,
+					StudentId = Int32.Parse(studentId)
+				});
+			}
+			<p class="fs-4">@item.QuestionText</p>
+			@switch (item.QuestionType)
+			{
+				case QuestionType.Multiple_Choice:
+					<div class="d-flex justify-content-evenly">
+						<InputRadioGroup @bind-Value="answerDto[questions.IndexOf(item)].AnswerId">
+							@foreach (var answer in item.Answers)
+							{
+								@if (!String.IsNullOrEmpty(answer.AnswerText))
+								{
+									<InputRadio class="btn-check" id="@answer.Id" Value="answer.Id"></InputRadio>
+									<label class="btn btn-outline-primary" for="@answer.Id">@answer.AnswerText</label>
+								}
+							}
+						</InputRadioGroup>
+					</div>
+					break;
+				case QuestionType.TrueOrFalse:
+					<div class="d-flex justify-content-evenly">
+						<InputRadioGroup @bind-Value="answerDto[questions.IndexOf(item)].AnswerId">
+							@foreach (var answer in item.Answers)
+							{
+								@if (!String.IsNullOrEmpty(answer.AnswerText))
+								{
+									<InputRadio class="btn-check" id="@answer.Id" Value="answer.Id"></InputRadio>
+									<label class="btn btn-outline-primary" for="@answer.Id">@answer.AnswerText</label>
+								}
+							}
+						</InputRadioGroup>
+					</div>
+					break;
+				case QuestionType.Text:
+					<input class="form-control" type="text" />
+					break;
+				case QuestionType.TextArea:
+						<textarea  class="form-control"></textarea>
+						break;
+				}
+
+					@{i++;}
+		</EditForm>
+
+	}
+</div>
+@code {
+	[Parameter]
+	public string? studentId { get; set; }
+	List<Question> questions { get; set; }
+	private List<StudentProfileAnswers>? answerDto { get; set; } = new List<StudentProfileAnswers>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.LEARNING_PROFILE_SURVEY}");
+	}
+}

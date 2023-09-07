@@ -86,5 +86,19 @@ namespace PlacementTestMangement.Server.Controllers
             var result = _studentRepository.SubmitReadingAnswers(answersDto);
             return Ok();
         }
-    }
+
+        [HttpPut("/api/student/updatePersonalData")]
+        public IActionResult UpdatePersonalData(PersonalDataDto dto)
+        {
+            var result = _studentRepository.UpdateStudentPersonalData(dto);
+            return Ok(result);
+        }
+
+		[HttpPut("/api/student/updateTimer")]
+		public IActionResult UpdateTimer(TimerDto dto)
+		{
+			var result = _studentRepository.UpdateTimer(dto);
+			return Ok(result);
+		}
+	}
 }

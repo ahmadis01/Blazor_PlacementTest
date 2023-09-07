@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PlacementTestMangement.Server.Interfaces;
 using PlacementTestMangement.Shared.Dto;
+using PlacementTestMangement.Shared.Enums;
 using PlacementTestMangement.Shared.Models;
 
 namespace PlacementTestMangement.Server.Controllers
@@ -32,11 +33,19 @@ namespace PlacementTestMangement.Server.Controllers
 			return Ok(question);
 		}
 		[HttpGet("getByQuestionType/{QuestionTypeId:int}")]
-		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsByType(int QuestionTypeId)
+		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsByType(int questionType)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-			var questions =await _questionRepository.GetQuestionsByType(QuestionTypeId);
+			var questions =await _questionRepository.GetQuestionsByType((QuestionType)questionType);
+			return Ok(questions);
+		}
+		[HttpGet("getByQuestionSection/{QuestionSectionId:int}")]
+		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsBySection(int questionSection)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+			var questions = await _questionRepository.GetByQuestinoSection((QuestionSection)questionSection);
 			return Ok(questions);
 		}
 		[HttpPost]

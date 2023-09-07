@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PlacementTestMangement.Server.Data;
 using PlacementTestMangement.Server.Interfaces;
 using PlacementTestMangement.Server.Repository;
+using System;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<DataContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<IQuestionTypeRepository, QuestionTypeRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IAnswerRepositroy, AnswerRepository>();
 builder.Services.AddScoped<ISettingRepository, SettingRepository>();
@@ -38,7 +38,17 @@ else
     app.UseWebAssemblyDebugging();
     app.UseHsts();
 }
+using (var serviceScope = app.Services.CreateScope())
+{
+	var services = serviceScope.ServiceProvider;
 
+	var dbcontext = services.GetRequiredService<DataContext>();
+	var pendingMigrations = await dbcontext.Database.GetPendingMigrationsAsync();
+	if (pendingMigrations.Any())
+	{
+		await dbcontext.Database.MigrateAsync();
+	}
+}
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(c =>

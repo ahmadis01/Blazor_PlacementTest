@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PlacementTestMangement.Server.Data;
 using PlacementTestMangement.Server.Interfaces;
 using PlacementTestMangement.Shared.Dto;
+using PlacementTestMangement.Shared.Enums;
 using PlacementTestMangement.Shared.Models;
 
 namespace PlacementTestMangement.Server.Repository
@@ -16,7 +17,6 @@ namespace PlacementTestMangement.Server.Repository
 		}
 		public bool AddQuestion(Question question)
 		{
-
             _context.Add(question);
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
@@ -31,10 +31,16 @@ namespace PlacementTestMangement.Server.Repository
 		{
 			return _context.Questions.OrderBy(x => x.Id).Include(c=> c.Answers).ToList();
 		}
-		public async Task<IEnumerable<Question>> GetQuestionsByType(int id)
+		public async Task<IEnumerable<Question>> GetQuestionsByType(QuestionType questionType)
 		{
-			return await _context.Questions.Where(x => x.QuestionTypeId == id).Include(a=>a.Answers).ToListAsync();
+			return await _context.Questions.Where(x => x.QuestionType == questionType).Include(a=>a.Answers).ToListAsync();
 		}
+
+		public async Task<IEnumerable<Question>> GetByQuestinoSection(QuestionSection questionSection)
+		{
+			return await _context.Questions.Where(x => x.QuestionSection == questionSection).Include(a => a.Answers).ToListAsync();
+		}
+
 		public bool RemoveQuestion(int id)
 		{
 			var question = _context.Questions.FirstOrDefault(x => x.Id == id);

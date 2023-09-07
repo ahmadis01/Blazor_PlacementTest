@@ -15,7 +15,7 @@ namespace PlacementTestMangement.Server.Data
         public DbSet<Record> Records { get; set; }
         public DbSet<Text> Texts { get; set; }
         public DbSet<Level> Levels { get; set; }
-        public DbSet<QuestionType> QuestionTypes{ get; set; }
+        public DbSet<StudentAnswers> StudentAnswers{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,28 +23,6 @@ namespace PlacementTestMangement.Server.Data
                 .HasMany(q => q.Answers)
                 .WithOne(a => a.Question)
                 .IsRequired();
-            modelBuilder.Entity<QuestionType>().HasData(
-                new QuestionType
-                {
-                    Id = 1,
-                    Name = "Grammar",
-                    Mark = 100,
-                    Minute = 30,
-                },
-                new QuestionType
-                {
-                    Id = 2,
-                    Name = "Listening",
-                    Mark = 100,
-                    Minute =30 ,
-                },
-                new QuestionType
-                {
-                    Id = 3,
-                    Name = "Reading",
-                    Mark = 10,
-                    Minute = 15,
-                });
         }
 
     }

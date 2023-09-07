@@ -10,12 +10,18 @@
 			<input class="form-control mb-3" id="name" @bind-value="question.QuestionText"/>
 			<label for="number" class="col-form-label">Question Mark</label>
 			<input class="form-control mb-3" id="number" @bind-value="question.Mark"/>
+			<label for="type" class="col-form-label">Question Section</label>
+			<InputSelect class="form-select w-50 m-2" @bind-Value="question.QuestionSection">
+				@foreach (var questionSection in questionSections)
+				{
+					<option value="@questionSection">@questionSection.ToString()</option>
+				}
+			</InputSelect>
 			<label for="type" class="col-form-label">Question Type</label>
-
-			<InputSelect class="select" @bind-Value="question.QuestionTypeId" style="width:100px;">
+			<InputSelect class="form-select w-50 m-2" @bind-Value="question.QuestionType" style="width:100px;">
 				@foreach (var questionType in questionTypes)
 				{
-					<option value="@questionType.Id">@questionType.Name</option>
+					<option value="@questionType">@questionType</option>
 				}
 			</InputSelect>
 			<sapn>Answers:</sapn>
@@ -63,10 +69,12 @@
 	[Parameter] 
 	public string? QuestionId { get; set; }
 	private Question? question = new Question();
-	private QuestionType[]? questionTypes;
+	List<string> questionTypes;
+	List<string> questionSections;
 	protected override async Task OnInitializedAsync(){
 		question =await Http.GetFromJsonAsync<Question>($"/api/Question/{QuestionId}");
-		questionTypes = await Http.GetFromJsonAsync<QuestionType[]>("/api/questionType");
+		questionTypes = Enum.GetNames<QuestionType>().ToList();
+		questionSections = Enum.GetNames<QuestionSection>().ToList();
 	}
 	 async Task Edit(){
 		var respond = await Http.PutAsJsonAsync<Question>("/api/Question/",question);
