@@ -7,20 +7,18 @@
 		<div class="details">
 			<h3>Details</h3>
 			<div class="d-flex justify-content-between">
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Id : @student.Id</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Name : @student.Name</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student PhoneNumber : @student.PhoneNumber</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Age : @student.Age</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Address : @student.Address</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">For Emergncies Name : @student.ForEmergenciesName</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">For Emergncies PhoneNumber : @student.ForEmergenciesNumber</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Home Number : @student.HomeNumber</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student BirthDate : @student.BirthDate.Date</span>
-				<span class="m-2 p-1 bg-success rounded-2 text-light">Student School/work : @student.SchoolOrWork</span>
+				<span class="m-2 p-1 bg-primary rounded-2 text-light">Student Id : @student.Id</span>
+				<span class="m-2 p-1 bg-primary rounded-2 text-light">Student Name : @student.Name</span>
+				<span class="m-2 p-1 bg-primary rounded-2 text-light">Student PhoneNumber : @student.PhoneNumber</span>
+				<span class="m-2 p-1 bg-primary rounded-2 text-light">Student Age : @student.Age</span>
+				<span class="m-2 p-1 bg-primary rounded-2 text-light">Student Address : @student.Address</span>
+				<span class="m-2 p-1 bg-primary rounded-2 text-light">Student BirthDate : @student.BirthDate.Date</span>
+				<span class="m-2 p-1 bg-primary rounded-2 text-light">Student School/work : @student.SchoolOrWork</span>
 			</div>
 		</div>
-		<div class="answers">
-			<h3>Answers</h3>
+		<h3>Answers</h3>
+
+		<div class="answers border border-light m-3 p-2" style="overflow-y:scroll;max-height:400px">
 			<table class="table">
 				<thead>
 					<tr>
@@ -33,7 +31,7 @@
 					@foreach (var item in answers)
 					{
 						<tr>
-							<th scope="row">@answers.IndexOf(item)</th>
+							<th scope="row">@(answers.IndexOf(item)+1)</th>
 							<td>@item.Question</td>
 							<td>@item.Answer</td>
 						</tr>
@@ -53,14 +51,16 @@
 			<input class="form-control mb-3" id="name" @bind-value="student.CurrentQuestion"/>
 			<label for="number" class="col-form-label">Student Number</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
-			<label for="number" class="col-form-label">PlacementTest Mark</label>
+			<label for="number" class="col-form-label">PlacementTest Mark out of 5</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PlacementTestMark" disabled/>
-			<label for="number" class="col-form-label">Writing Mark out of 10</label>
+			<label for="number" class="col-form-label">Writing Mark out of 5</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
-			<label for="number" class="col-form-label">Speaking Mark out of 10</label>
+			<label for="number" class="col-form-label">Speaking Mark out of 5</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
 			<label for="number" class="col-form-label">Total Score</label>
-			<input class="form-control mb-3" id="number" value="@(student.PlacementTestMark + @student.SpeakingMark+@student.SpeakingMark)" disabled/>
+			<input class="form-control mb-3" id="number" value="@((double)((double)student.PlacementTestMark/10 + @student.WritingMark + @student.SpeakingMark))" disabled/>
+			<label for="note" class="col-form-label">Notes</label>
+			<input class="form-control mb-3" id="note" @bind-value="student.Note" />
 			<label for="number" class="col-form-label">Level</label>
 			<InputSelect class="form-control" @bind-Value="student.Level">
 				@foreach (var level in levels)
@@ -87,6 +87,7 @@
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{StudentId}");
 		levels = await Http.GetFromJsonAsync<List<Level>>($"/api/Setting/level");
 		answers = await Http.GetFromJsonAsync<List<GetStudentAnswersDto>>($"/api/student/GetStudentAnswers/{StudentId}");
+		student.PlacementTestMark = student.PlacementTestMark / 10d;
 	}
 	async Task Edit()
 	{

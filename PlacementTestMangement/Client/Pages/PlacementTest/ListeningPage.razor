@@ -4,50 +4,52 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @layout MainLayout
 
-@if (student.CurrentQuestion <= questions.Count)
+@if (student.CurrentQuestion < questions.Count)
 {
 	{
 		questionId = questions.IndexOf(questions[student.CurrentQuestion]);
 	};
-	<span class="title">Placement Test</span> 
+	<span class="title">Placement Test</span>
 	answerDto.QuestionId = questions[questionId - 1].Id;
-		<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
-		<div class="paper m-xxl-4">
-			<EditForm Model="@answerDto" OnValidSubmit="@submit">
+	<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
+	<div class="paper m-xxl-4">
+		<EditForm Model="@answerDto" OnValidSubmit="@submit">
 
 			<p class="fs-4">@questionId . @questions[questionId - 1].QuestionText</p>
-				<div class="d-flex justify-content-evenly">
-					<InputRadioGroup @bind-Value="answerDto.AnswerId">
+			<div class="d-flex justify-content-evenly">
+				<InputRadioGroup @bind-Value="answerDto.AnswerId">
 					@foreach (var answer in questions[questionId - 1].Answers)
+					{
+						@if (!String.IsNullOrEmpty(answer.AnswerText))
 						{
-							@if (!String.IsNullOrEmpty(answer.AnswerText))
-							{
-								<InputRadio  class="btn-check" id="@answer.Id" Value="answer.Id"></InputRadio>
-								<label class="btn btn-outline-primary" for="@answer.Id">@answer.AnswerText</label>
-							}
+							<InputRadio class="btn-check" id="@answer.Id" Value="answer.Id"></InputRadio>
+							<label class="btn btn-outline-primary" for="@answer.Id">@answer.AnswerText</label>
 						}
-					</InputRadioGroup>
-				</div>
-				@{
-					if (answerDto.AnswerId != 0) isDisabled = false;
-					else isDisabled = true;
-				}
-				<input class="btn btn-primary d-block mx-auto my-4 w-50" disabled="@isDisabled" type="submit" value="Next"/>
-				<input class="btn btn-danger d-block mx-auto my-4 w-15"  @onclick="@skip" value="Skip"/>
-			</EditForm>			
+					}
+				</InputRadioGroup>
+			</div>
+			@{
+				if (answerDto.AnswerId != 0) isDisabled = false;
+				else isDisabled = true;
+			}
+			<input class="btn btn-primary d-block mx-auto my-4 w-50" disabled="@isDisabled" type="submit" value="Next" />
+			<input class="btn btn-danger d-block mx-auto my-4 w-15" @onclick="@skip" value="Skip" />
+		</EditForm>
 	</div>
-}else {
-	navigationManager.NavigateTo($"/placementTest/end");
+}
+else
+{
+	navigationManager.NavigateTo($"/placementTest/writing");
 }
 
 @code {
-	public int questionId ;
+	public int questionId;
 	[Parameter]
 	public string? studentId { get; set; }
-	private Student student {get ; set; }
+	private Student student { get; set; }
 	protected bool isDisabled = true;
-	private Question[]? grammerQuestions { get ; set; }
-	 List<Question> questions { get; set; }
+	private Question[]? grammerQuestions { get; set; }
+	List<Question> questions { get; set; }
 	private StudentAnswerDto? answerDto { get; set; } = new StudentAnswerDto();
 	private System.Threading.Timer? timer;
 	private TimeSpan countDown;
@@ -62,7 +64,7 @@
 	{
 		play = false;
 		answerDto.StudentId = Int16.Parse(studentId);
-		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.PlacementTest}");
+		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.Placement_Test}");
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
 		countDown = student.Timer;
 		//timer
@@ -71,11 +73,11 @@
 			await sessionStorage.SetItemAsStringAsync("timer", countDown.ToString());
 			countDown = countDown - TimeSpan.FromSeconds(1);
 			timerDto.Timer = countDown;
-			timerDto.StudentId = Int16.Parse( studentId);
+			timerDto.StudentId = Int16.Parse(studentId);
 			await Http.PutAsJsonAsync<TimerDto>($"/api/student/updateTimer", timerDto);
-			if(countDown == TimeSpan.Zero)
+			if (countDown == TimeSpan.Zero)
 			{
-				navigationManager.NavigateTo("/placementTest/end");
+				navigationManager.NavigateTo("/placementTest/writing");
 			}
 			StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
 		}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
@@ -86,10 +88,12 @@
 		student.CurrentQuestion++;
 		answerDto.AnswerId = 0;
 	}
-	private void check(){
+	private void check()
+	{
 		isDisabled = false;
 	}
-	private async Task skip(){
+	private async Task skip()
+	{
 		await Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/skip", answerDto);
 		student.CurrentQuestion++;
 		answerDto.AnswerId = 0;

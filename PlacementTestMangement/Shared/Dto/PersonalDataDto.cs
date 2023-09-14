@@ -12,16 +12,11 @@ namespace PlacementTestMangement.Shared.Dto
         public int Id { get; set; }
 		[Required]
         public string Name { get; set; }
-		[Required]
+		[Required(AllowEmptyStrings = false, ErrorMessage = "Phone Number is required")]
+		[MaxLength(10, ErrorMessage = "Phone Number Wrong"), MinLength(10, ErrorMessage = "Phone Number Wrong")]
 		public string PhoneNumber { get; set; }
-		[Required]
-		public string HomenNumber { get; set; }
-		[Required]
-		public string Address { get; set; }
-		public string ForEmergenciesName { get; set; } = string.Empty;
-		public string ForEmergenciesNumber { get; set; } = string.Empty;
-		[Required]
-		public string SchoolOrWork { get; set; }
+		public string Address { get; set; } = string.Empty;
+		public string SchoolOrWork { get; set; } = string.Empty;
 		[Required]
 		public DateTime BirthDate { get; set; }
 		[Required]

@@ -9,6 +9,7 @@ namespace PlacementTestMangement.Shared.Enums
 	public enum QuestionSection
 	{
 		LEARNING_PROFILE_SURVEY,
-		PlacementTest
+		Placement_Test,
+		Writing
 	}
 }

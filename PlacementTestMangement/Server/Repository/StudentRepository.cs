@@ -49,11 +49,8 @@ namespace PlacementTestMangement.Server.Repository
                 Address = dto.Address,
                 BirthDate = dto.BirthDate,
                 PhoneNumber = dto.PhoneNumber,
-                HomeNumber = dto.HomenNumber,
                 Age = dto.Age,
                 SchoolOrWork = dto.SchoolOrWork,
-                ForEmergenciesName = dto.ForEmergenciesName,
-                ForEmergenciesNumber = dto.ForEmergenciesNumber,
             };
             _context.Update(student);
             _context.SaveChanges();
@@ -168,9 +165,6 @@ namespace PlacementTestMangement.Server.Repository
                 Address = s.Address,
                 Age = s.Age,
                 BirthDate = s.BirthDate,
-                ForEmergenciesName = s.ForEmergenciesName,
-                ForEmergenciesNumber = s.ForEmergenciesNumber,
-                HomenNumber = s.HomeNumber,
                 Name = s.Name,
                 PhoneNumber = s.PhoneNumber,
                 SchoolOrWork = s.SchoolOrWork

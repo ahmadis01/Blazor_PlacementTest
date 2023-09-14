@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlacementTestMangement.Server.Data;
 
@@ -11,9 +12,10 @@ using PlacementTestMangement.Server.Data;
 namespace PlacementTestMangement.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230914211234_editStudent")]
+    partial class editStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,8 +143,8 @@ namespace PlacementTestMangement.Server.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<double>("PlacementTestMark")
-                        .HasColumnType("float");
+                    b.Property<int>("PlacementTestMark")
+                        .HasColumnType("int");
 
                     b.Property<string>("SchoolOrWork")
                         .HasColumnType("nvarchar(max)");

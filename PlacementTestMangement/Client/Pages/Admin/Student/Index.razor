@@ -36,7 +36,7 @@
 				<td>@student.Id</td>
 				<td>@student.Name</td>
 				<td>@student.PhoneNumber</td>
-				<td>@(student.WritingMark + student.PlacementTestMark + student.SpeakingMark + student.SpeakingMark)</td>
+				<td>@(student.WritingMark + student.PlacementTestMark/10 + student.SpeakingMark)</td>
 				<td>@student.StartTime</td>
 				<td>@student.Timer</td>
 				<td>@student.CurrentQuestion</td>

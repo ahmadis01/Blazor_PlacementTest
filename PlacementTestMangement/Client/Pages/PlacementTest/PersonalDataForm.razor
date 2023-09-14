@@ -16,7 +16,7 @@
                 <input type="date" class="form-control" @bind-value="personalData.BirthDate">
             </div>
             <div class="d-inline">
-                <label class="form-label">Age at last birthday</label>
+                <label class="form-label">Age</label>
                 <input type="number" class="form-control" @bind-value="personalData.Age">
             </div>
         </div>
@@ -31,23 +31,8 @@
         <div class="mb-3 d-flex justify-content-evenly">
             <span>Telephone:</span>
             <div class="d-inline">
-                <label class="form-label">Home</label>
-                <input type="text" class="form-control" @bind-value="personalData.HomenNumber">
-            </div>
-            <div class="d-inline">
                 <label class="form-label">Moblie</label>
                 <input type="text" class="form-control" @bind-value="personalData.PhoneNumber">
-            </div>
-        </div>
-        <div class="mb-3 d-flex">
-            <span>For emergencies, call:</span>
-            <div class="d-inline mx-5">
-                <label class="form-label">Name</label>
-                <input type="text" class="form-control" @bind-value="personalData.ForEmergenciesName">
-            </div>
-            <div class="d-inline mx-5">
-                <label class="form-label">Telephone Number</label>
-                <input type="text" class="form-control" @bind-value="personalData.ForEmergenciesNumber">
             </div>
         </div>
         <div class="d-flex justify-content-center align-items-center">
@@ -61,10 +46,16 @@
 @code {
     [Parameter]
     public string studentId { get; set; }
+
     private PersonalDataDto personalData = new PersonalDataDto()
     {
         BirthDate = DateTime.Now
     };
+    protected override async Task OnInitializedAsync()
+    {
+        personalData = await Http.GetFromJsonAsync<PersonalDataDto>($"/api/student/GetStudentPersonalData/{studentId}");
+
+    }
     async Task AddPersonalData()
     {
         personalData.Id = Int32.Parse(studentId);

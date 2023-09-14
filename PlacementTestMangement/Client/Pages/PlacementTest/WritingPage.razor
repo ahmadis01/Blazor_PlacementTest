@@ -1,0 +1,47 @@
+﻿@page "/placementTest/writing/{studentId}"
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@layout MainLayout
+<h3 class="title">WRITING PLACEMENT TEST</h3>
+<div class="paper m-xxl-4">
+
+
+	<EditForm Model="answerDto" OnValidSubmit="submit">
+		<InputRadioGroup @bind-Value="answerDto.QuestionId">
+			@foreach (var question in questions)
+			{
+				@(questions.IndexOf(question) + 1)<InputRadio class="btn-check" id="@question.Id" Value="question.Id"></InputRadio>
+				<label class="btn btn-outline-primary" for="@question.Id">@question.QuestionText</label>
+			}
+		</InputRadioGroup>
+		<textarea class="w-100 m-4" @bind="answerDto.AnswerText" style="height:500px" placeholder="Write Here..."></textarea>
+		<input class="btn btn-primary d-block mx-auto my-4 w-50" type="submit" value="Submit" />
+	</EditForm>
+</div>
+
+@code {
+	[Parameter]
+	public string? studentId { get; set; }
+	private Student student { get; set; }
+	List<Question> questions { get; set; }
+	private StudentProfileAnswers? answerDto { get; set; } = new StudentProfileAnswers
+	{
+			AnswerId = 0,
+			QuestionId = 0,
+			AnswerText = string.Empty,
+			QuestionType = QuestionType.Text,
+			StudentId = Int32.Parse("0")
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.Writing}");
+	}
+	private async Task submit()
+	{
+		answerDto.StudentId = Int32.Parse( studentId);
+		await Http.PutAsJsonAsync<List<StudentProfileAnswers>>($"/api/student/SubmitLearningProfileSurvey", new List<StudentProfileAnswers>{answerDto});
+		navigationManager.NavigateTo("/placementTest/end");
+	}
+}
