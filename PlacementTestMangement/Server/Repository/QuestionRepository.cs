@@ -36,9 +36,9 @@ namespace PlacementTestMangement.Server.Repository
 			return await _context.Questions.Where(x => x.QuestionType == questionType).Include(a=>a.Answers).ToListAsync();
 		}
 
-		public async Task<IEnumerable<Question>> GetByQuestinoSection(QuestionSection questionSection)
+		public IEnumerable<Question> GetByQuestinoSection(QuestionSection questionSection)
 		{
-			return await _context.Questions.Where(x => x.QuestionSection == questionSection).Include(a => a.Answers).ToListAsync();
+			return _context.Questions.Where(x => x.QuestionSection == (QuestionSection)questionSection).Include(a => a.Answers).ToList();
 		}
 
 		public bool RemoveQuestion(int id)

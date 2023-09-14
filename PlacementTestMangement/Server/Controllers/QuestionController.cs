@@ -40,12 +40,12 @@ namespace PlacementTestMangement.Server.Controllers
 			var questions =await _questionRepository.GetQuestionsByType((QuestionType)questionType);
 			return Ok(questions);
 		}
-		[HttpGet("getByQuestionSection/{QuestionSectionId:int}")]
+		[HttpGet("getByQuestionSection/{questionSection}")]
 		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsBySection(int questionSection)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-			var questions = await _questionRepository.GetByQuestinoSection((QuestionSection)questionSection);
+			var questions = _questionRepository.GetByQuestinoSection((QuestionSection)questionSection);
 			return Ok(questions);
 		}
 		[HttpPost]

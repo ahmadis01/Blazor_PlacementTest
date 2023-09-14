@@ -143,5 +143,48 @@ namespace PlacementTestMangement.Server.Repository
             _context.SaveChanges();
             return true;
         }
+        public async Task<bool> SubmitLearningProfileSurveyAsync(List<StudentProfileAnswers> answers)
+        {
+            var entities = new List<StudentAnswers>();
+            foreach (var answer in answers)
+            {
+                entities.Add(new StudentAnswers
+                {
+                    AnswerId = answer.AnswerId != 0 ? answer.AnswerId : null,
+                    AnswerText = answer.AnswerText,
+                    QuestionId = answer.QuestionId,
+                    StudentId = answer.StudentId,
+                });
+			}
+            _context.StudentAnswers.AddRange(entities);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<PersonalDataDto> GetStudentPersonalDataAsync(int studentId)
+        {
+            var student = await _context.Students.Where(x => x.Id == studentId).Select(s => new PersonalDataDto
+            {
+                Id = s.Id,
+                Address = s.Address,
+                Age = s.Age,
+                BirthDate = s.BirthDate,
+                ForEmergenciesName = s.ForEmergenciesName,
+                ForEmergenciesNumber = s.ForEmergenciesNumber,
+                HomenNumber = s.HomeNumber,
+                Name = s.Name,
+                PhoneNumber = s.PhoneNumber,
+                SchoolOrWork = s.SchoolOrWork
+            }).FirstOrDefaultAsync();
+            return student;
+        }
+        public async Task<List<GetStudentAnswersDto>> GetStudentAnswersAsync(int studentId)
+        {
+            var answers = await _context.StudentAnswers.Where(s => s.StudentId == studentId).Select(s => new GetStudentAnswersDto
+            {
+                Question = s.Question.QuestionText,
+                Answer = string.IsNullOrEmpty(s.AnswerText) ? s.Answer.AnswerText : s.AnswerText
+            }).ToListAsync();
+            return answers;
+        }
     }
 }

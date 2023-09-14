@@ -100,5 +100,27 @@ namespace PlacementTestMangement.Server.Controllers
 			var result = _studentRepository.UpdateTimer(dto);
 			return Ok(result);
 		}
-	}
+		[HttpPut("/api/student/SubmitLearningProfileSurvey")]
+		public async Task<IActionResult> SubmitLearningProfileSurvey(List<StudentProfileAnswers> dto)
+		{
+			var result = await _studentRepository.SubmitLearningProfileSurveyAsync(dto);
+			return Ok(result);
+		}
+        [HttpGet("/api/student/GetStudentPersonalData/{studentId}")]
+        public async Task<IActionResult> GetStudentPersonalData(int studentId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var result = await _studentRepository.GetStudentPersonalDataAsync(studentId);
+            return Ok(result);
+        }
+        [HttpGet("/api/student/GetStudentAnswers/{studentId}")]
+        public async Task<IActionResult> GetStudentAnswers(int studentId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var result = await _studentRepository.GetStudentAnswersAsync(studentId);
+            return Ok(result);
+        }
+    }
 }

@@ -69,6 +69,6 @@
     {
         personalData.Id = Int32.Parse(studentId);
         var respond = await Http.PutAsJsonAsync<PersonalDataDto>("/api/student/updatePersonalData", personalData);
-        navigationManager.NavigateTo($"/placementTest/listening/{studentId}");
+        navigationManager.NavigateTo($"/placementTest/learning-profile-survey/{studentId}");
     }
 }

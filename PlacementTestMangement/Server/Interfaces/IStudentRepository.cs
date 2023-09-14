@@ -17,6 +17,8 @@ namespace PlacementTestMangement.Server.Interfaces
         bool SubmitReadingAnswers(ReadingAnswersDto answersDto);
         int UpdateStudentPersonalData(PersonalDataDto dto);
 		bool UpdateTimer(TimerDto timerDto);
-
-	}
+        Task<bool> SubmitLearningProfileSurveyAsync(List<StudentProfileAnswers> answers);
+        Task<PersonalDataDto> GetStudentPersonalDataAsync(int studentId);
+        Task<List<GetStudentAnswersDto>> GetStudentAnswersAsync(int studentId);
+    }
 }

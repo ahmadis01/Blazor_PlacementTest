@@ -9,7 +9,7 @@ namespace PlacementTestMangement.Server.Interfaces
 	{
 		ICollection<Question> GetQuestions();
 		Task<IEnumerable<Question>> GetQuestionsByType(QuestionType questionType);
-		Task<IEnumerable<Question>> GetByQuestinoSection(QuestionSection questionSection);
+		IEnumerable<Question> GetByQuestinoSection(QuestionSection questionSection);
 		Task<Question> GetQuestion(int id);
 		bool AddQuestion(Question question);
 		bool RemoveQuestion(int id);

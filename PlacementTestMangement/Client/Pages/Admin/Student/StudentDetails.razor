@@ -1,0 +1,17 @@
+﻿@page "/admin/student/details/{StudentId}"
+@inject NavigationManager navigationManager
+@inject HttpClient Http
+
+@code {
+    [Parameter]
+    public string StudentId { get; set; }
+    List<Question> questions { get; set; }
+    List<GetStudentAnswersDto> answers;
+    PersonalDataDto student;
+    protected override async Task OnInitializedAsync()
+	{
+        answers = await Http.GetFromJsonAsync<List<GetStudentAnswersDto>>($"/api/student/GetStudentAnswers/{StudentId}");
+        student = await Http.GetFromJsonAsync<PersonalDataDto>($"/api/student/GetStudentPersonalData/{StudentId}");
+		//levels = await Http.GetFromJsonAsync<List<Level>>($"/api/Setting/level");
+	}
+}

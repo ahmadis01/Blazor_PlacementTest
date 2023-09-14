@@ -2,9 +2,46 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
-
-
 <div class="container">	
+	<div class="container">
+		<div class="details">
+			<h3>Details</h3>
+			<div class="d-flex justify-content-between">
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Id : @student.Id</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Name : @student.Name</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student PhoneNumber : @student.PhoneNumber</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Age : @student.Age</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Address : @student.Address</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">For Emergncies Name : @student.ForEmergenciesName</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">For Emergncies PhoneNumber : @student.ForEmergenciesNumber</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student Home Number : @student.HomeNumber</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student BirthDate : @student.BirthDate.Date</span>
+				<span class="m-2 p-1 bg-success rounded-2 text-light">Student School/work : @student.SchoolOrWork</span>
+			</div>
+		</div>
+		<div class="answers">
+			<h3>Answers</h3>
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Question</th>
+						<th scope="col">Answer</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in answers)
+					{
+						<tr>
+							<th scope="row">@answers.IndexOf(item)</th>
+							<td>@item.Question</td>
+							<td>@item.Answer</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
 	<div class="form">
 		<EditForm Model="@student" class="card p-4" id="form" OnValidSubmit="@Edit">
 			<span class="mx-auto fw-bold fs-4">Edit Student</span>
@@ -16,7 +53,7 @@
 			<input class="form-control mb-3" id="name" @bind-value="student.CurrentQuestion"/>
 			<label for="number" class="col-form-label">Student Number</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
-			<label for="number" class="col-form-label">Grammer Mark</label>
+			<label for="number" class="col-form-label">PlacementTest Mark</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PlacementTestMark" disabled/>
 			<label for="number" class="col-form-label">Writing Mark out of 10</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
@@ -43,10 +80,13 @@
 	public string? StudentId { get; set; }
 	private Student? student = new Student();
 	private List<Level> levels;
+	List<GetStudentAnswersDto> answers;
+
 	protected override async Task OnInitializedAsync()
 	{
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{StudentId}");
 		levels = await Http.GetFromJsonAsync<List<Level>>($"/api/Setting/level");
+		answers = await Http.GetFromJsonAsync<List<GetStudentAnswersDto>>($"/api/student/GetStudentAnswers/{StudentId}");
 	}
 	async Task Edit()
 	{

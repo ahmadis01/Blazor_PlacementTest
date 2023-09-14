@@ -1,4 +1,4 @@
-﻿@page "/placementTest/listening/{studentId}"
+﻿@page "/placementTest/{studentId}"
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -7,9 +7,9 @@
 @if (student.CurrentQuestion <= questions.Count)
 {
 	{
-		questionId = questions.FirstOrDefault(q => q.Id == student.CurrentQuestion).Id;
+		questionId = questions.IndexOf(questions[student.CurrentQuestion]);
 	};
-	<span class="title">Listening</span> 
+	<span class="title">Placement Test</span> 
 	answerDto.QuestionId = questions[questionId - 1].Id;
 		<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
 		<div class="paper m-xxl-4">
@@ -37,7 +37,7 @@
 			</EditForm>			
 	</div>
 }else {
-	navigationManager.NavigateTo($"/placementTest/grammer/{studentId}");
+	navigationManager.NavigateTo($"/placementTest/end");
 }
 
 @code {
@@ -47,7 +47,7 @@
 	private Student student {get ; set; }
 	protected bool isDisabled = true;
 	private Question[]? grammerQuestions { get ; set; }
-	private List<Question>? questions { get; set; }
+	 List<Question> questions { get; set; }
 	private StudentAnswerDto? answerDto { get; set; } = new StudentAnswerDto();
 	private System.Threading.Timer? timer;
 	private TimeSpan countDown;
@@ -62,7 +62,7 @@
 	{
 		play = false;
 		answerDto.StudentId = Int16.Parse(studentId);
-		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/1");
+		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.PlacementTest}");
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
 		countDown = student.Timer;
 		//timer
@@ -75,7 +75,7 @@
 			await Http.PutAsJsonAsync<TimerDto>($"/api/student/updateTimer", timerDto);
 			if(countDown == TimeSpan.Zero)
 			{
-				navigationManager.NavigateTo("/");
+				navigationManager.NavigateTo("/placementTest/end");
 			}
 			StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
 		}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
