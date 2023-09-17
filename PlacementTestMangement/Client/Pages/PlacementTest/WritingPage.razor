@@ -3,10 +3,16 @@
 @inject NavigationManager navigationManager
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @layout MainLayout
-<h3 class="title">WRITING PLACEMENT TEST</h3>
+@if(student.PlacementTestMark >= 2)
+{
+	<div class="d-flex justify-content-between">
+		<h3 class="title">WRITING PLACEMENT TEST</h3>
+		<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
+	</div>
+
+
+<p>Please choose one</p>
 <div class="paper m-xxl-4">
-
-
 	<EditForm Model="answerDto" OnValidSubmit="submit">
 		<InputRadioGroup @bind-Value="answerDto.QuestionId">
 			@foreach (var question in questions)
@@ -15,15 +21,35 @@
 				<label class="btn btn-outline-primary" for="@question.Id">@question.QuestionText</label>
 			}
 		</InputRadioGroup>
-		<textarea class="w-100 m-4" @bind="answerDto.AnswerText" style="height:500px" placeholder="Write Here..."></textarea>
+		<textarea class="w-100 m-4" @oninput="StartTimer" @bind="answerDto.AnswerText" style="height:500px" placeholder="Write Here..."></textarea>
 		<input class="btn btn-primary d-block mx-auto my-4 w-50" type="submit" value="Submit" />
 	</EditForm>
-</div>
-
+	</div>
+}
+else
+{
+	navigationManager.NavigateTo("/placementTest/end");
+}
+<style>
+	.timer {
+		padding: 4px;
+		float: right;
+		margin: 10px;
+		font-size: 25px;
+		border: 1px crimson solid;
+		background-color: crimson;
+		border-radius: 15px;
+		color: white;
+	}
+</style>
 @code {
 	[Parameter]
 	public string? studentId { get; set; }
 	private Student student { get; set; }
+	private TimeSpan countDown;
+	private TimerDto timerDto = new TimerDto();
+	private System.Threading.Timer? timer;
+	private bool startTimer = false;
 	List<Question> questions { get; set; }
 	private StudentProfileAnswers? answerDto { get; set; } = new StudentProfileAnswers
 	{
@@ -37,11 +63,54 @@
 	protected override async Task OnInitializedAsync()
 	{
 		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.Writing}");
+		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
+
+		countDown = student.Timer;
+
+		//timer
+		if (countDown == TimeSpan.Zero)
+			navigationManager.NavigateTo("/placementTest/end");
+		else
+		{
+			await UpdateTimer(timerDto);
+		}
 	}
+
 	private async Task submit()
 	{
 		answerDto.StudentId = Int32.Parse( studentId);
 		await Http.PutAsJsonAsync<List<StudentProfileAnswers>>($"/api/student/SubmitLearningProfileSurvey", new List<StudentProfileAnswers>{answerDto});
 		navigationManager.NavigateTo("/placementTest/end");
+	}
+	private async Task UpdateTimer(TimerDto timerDto)
+	{
+		if (countDown == TimeSpan.Zero)
+		{
+			navigationManager.NavigateTo("/placementTest/end");
+		}
+		else 
+		{
+			if (startTimer)
+			{
+				timer = new System.Threading.Timer(async (object? stateInfo) =>
+				{
+				countDown = countDown - TimeSpan.FromSeconds(1);
+				timerDto.Timer = countDown;
+				timerDto.StudentId = Int16.Parse(studentId);
+				if (countDown != TimeSpan.Zero)
+					await Http.PutAsJsonAsync<TimerDto>($"/api/student/updateTimer", timerDto);
+
+				StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+				}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
+			}
+
+		}
+
+	}
+	private async Task StartTimer()
+	{
+		startTimer = true;
+		await UpdateTimer(timerDto);
+		Console.WriteLine(startTimer);
 	}
 }

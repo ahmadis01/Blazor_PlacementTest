@@ -52,13 +52,13 @@
 			<label for="number" class="col-form-label">Student Number</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.PhoneNumber"/>
 			<label for="number" class="col-form-label">PlacementTest Mark out of 5</label>
-			<input class="form-control mb-3" id="number" @bind-value="student.PlacementTestMark" disabled/>
+			<input class="form-control mb-3" id="number" value="@((double)placementTestMark)" disabled />
 			<label for="number" class="col-form-label">Writing Mark out of 5</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
 			<label for="number" class="col-form-label">Speaking Mark out of 5</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
 			<label for="number" class="col-form-label">Total Score</label>
-			<input class="form-control mb-3" id="number" value="@((double)((double)student.PlacementTestMark/10 + @student.WritingMark + @student.SpeakingMark))" disabled/>
+			<input class="form-control mb-3" id="number" value="@(((double)placementTestMark + @student.WritingMark + @student.SpeakingMark))" disabled/>
 			<label for="note" class="col-form-label">Notes</label>
 			<input class="form-control mb-3" id="note" @bind-value="student.Note" />
 			<label for="number" class="col-form-label">Level</label>
@@ -81,13 +81,14 @@
 	private Student? student = new Student();
 	private List<Level> levels;
 	List<GetStudentAnswersDto> answers;
+	private double placementTestMark;
 
 	protected override async Task OnInitializedAsync()
 	{
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{StudentId}");
 		levels = await Http.GetFromJsonAsync<List<Level>>($"/api/Setting/level");
 		answers = await Http.GetFromJsonAsync<List<GetStudentAnswersDto>>($"/api/student/GetStudentAnswers/{StudentId}");
-		student.PlacementTestMark = student.PlacementTestMark / 10d;
+		placementTestMark = student.PlacementTestMark / 10d;
 	}
 	async Task Edit()
 	{
