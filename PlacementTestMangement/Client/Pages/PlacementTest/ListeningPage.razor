@@ -39,7 +39,8 @@
 }
 else
 {
-	countDown = TimeSpan.Zero;
+	navigationManager.NavigateTo($"/placementTest/writing/{studentId}");
+
 }
 
 @code {
@@ -68,18 +69,10 @@ else
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
 		countDown = student.Timer;
 		//timer
-		if (countDown == TimeSpan.Zero)
-		{
-			student.Timer = new TimeSpan(0, 15, 0);
-			var respond = await Http.PutAsJsonAsync<Student>("/api/Student/", student);
-			navigationManager.NavigateTo($"/placementTest/writing/{studentId}");
-		}
 		timer = new System.Threading.Timer(async (object? stateInfo) =>
 		{
 			if (countDown == TimeSpan.Zero)
 			{
-				student.Timer = new TimeSpan(0, 15, 0);
-				var respond = await Http.PutAsJsonAsync<Student>("/api/Student/", student);
 				navigationManager.NavigateTo($"/placementTest/writing/{studentId}");
 			}else
 			{
@@ -87,10 +80,8 @@ else
 				timerDto.Timer = countDown;
 				timerDto.StudentId = Int16.Parse(studentId);
 				await Http.PutAsJsonAsync<TimerDto>($"/api/student/updateTimer", timerDto);
-
+				StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
 			}
-
-			StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
 		}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
 	}
 	private async Task submit()
