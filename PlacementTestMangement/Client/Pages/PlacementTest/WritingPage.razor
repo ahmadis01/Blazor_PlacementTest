@@ -3,28 +3,34 @@
 @inject NavigationManager navigationManager
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @layout MainLayout
-@if(student.PlacementTestMark >= 20)
+@if (student.PlacementTestMark >= 20)
 {
 	<div class="d-flex justify-content-between">
 		<h3 class="title">WRITING PLACEMENT TEST</h3>
-		<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
 	</div>
 
 
-<p>Please choose one</p>
-<div class="paper m-xxl-4">
-	<EditForm Model="answerDto" OnValidSubmit="submit">
-		<InputRadioGroup @bind-Value="answerDto.QuestionId">
-			@foreach (var question in questions)
-			{
-				@(questions.IndexOf(question) + 1)<InputRadio class="btn-check" id="@question.Id" Value="question.Id"></InputRadio>
-				<label class="btn btn-outline-primary" for="@question.Id">@question.QuestionText</label>
-			}
-		</InputRadioGroup>
-		<p class="text-danger fw-bold">The timer will start when input first letter</p>
-		<textarea class="w-100 m-4" @oninput="StartTimer" @bind="answerDto.AnswerText" style="height:500px" placeholder="Write Here..."></textarea>
-		<input class="btn btn-primary d-block mx-auto my-4 w-50" type="submit" value="Submit" />
-	</EditForm>
+	<p>Please choose one</p>
+	<div class="paper m-xxl-4">
+		<EditForm Model="answerDto" OnValidSubmit="submit">
+			<InputRadioGroup @bind-Value="answerDto.QuestionId">
+				@foreach (var question in questions)
+				{
+					@(questions.IndexOf(question) + 1)
+
+					<InputRadio class="btn-check" id="@question.Id" Value="question.Id">_</InputRadio>
+					<label class="btn btn-outline-primary" for="@question.Id" style="white-space: pre-line; margin:10px">@question.QuestionText</label>
+					<br />
+				}
+			</InputRadioGroup>
+			<div class="d-flex justify-content-between">
+				<p class="text-danger fw-bold">The timer will start when input first letter</p>
+				<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
+			</div>
+
+			<textarea class="w-100 m-4" @oninput="StartTimer" @bind="answerDto.AnswerText" style="height:500px" placeholder="Write Here..."></textarea>
+			<input class="btn btn-primary d-block mx-auto my-4 w-50" type="submit" value="Submit" />
+		</EditForm>
 	</div>
 }
 else
@@ -51,15 +57,16 @@ else
 	private TimerDto timerDto = new TimerDto();
 	private System.Threading.Timer? timer;
 	private bool startTimer = false;
+	private bool IsFirstInput = true;
 	List<Question> questions { get; set; }
 	private StudentProfileAnswers? answerDto { get; set; } = new StudentProfileAnswers
-	{
+		{
 			AnswerId = 0,
 			QuestionId = 0,
 			AnswerText = string.Empty,
 			QuestionType = QuestionType.Text,
 			StudentId = Int32.Parse("0")
-	};
+		};
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -73,8 +80,8 @@ else
 
 	private async Task submit()
 	{
-		answerDto.StudentId = Int32.Parse( studentId);
-		await Http.PutAsJsonAsync<List<StudentProfileAnswers>>($"/api/student/SubmitLearningProfileSurvey", new List<StudentProfileAnswers>{answerDto});
+		answerDto.StudentId = Int32.Parse(studentId);
+		await Http.PutAsJsonAsync<List<StudentProfileAnswers>>($"/api/student/SubmitLearningProfileSurvey", new List<StudentProfileAnswers> { answerDto });
 		navigationManager.NavigateTo("/placementTest/end");
 	}
 	private async Task UpdateTimer(TimerDto timerDto)
@@ -104,6 +111,8 @@ else
 	private async Task StartTimer()
 	{
 		startTimer = true;
-		await UpdateTimer(timerDto);
+		if(IsFirstInput)
+			await UpdateTimer(timerDto);
+		IsFirstInput = false;
 	}
 }

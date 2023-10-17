@@ -4,21 +4,21 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @layout MainLayout
 
-@if (student.CurrentQuestion < questions.Count)
+@if (student.CurrentQuestion <= questions.Count)
 {
 	{
-		questionId = questions.IndexOf(questions[student.CurrentQuestion]);
+		questionId = questions.IndexOf(questions[student.CurrentQuestion - 1]);
 	};
 	<span class="title">Placement Test</span>
-	answerDto.QuestionId = questions[questionId - 1].Id;
+	answerDto.QuestionId = questions[questionId].Id;
 	<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
 	<div class="paper m-xxl-4">
 		<EditForm Model="@answerDto" OnValidSubmit="@submit">
 
-			<p class="fs-4">@questionId . @questions[questionId - 1].QuestionText</p>
+			<p class="fs-4">@(questionId + 1) . @questions[questionId].QuestionText</p>
 			<div class="d-flex justify-content-evenly">
 				<InputRadioGroup @bind-Value="answerDto.AnswerId">
-					@foreach (var answer in questions[questionId - 1].Answers)
+					@foreach (var answer in questions[questionId].Answers)
 					{
 						@if (!String.IsNullOrEmpty(answer.AnswerText))
 						{
