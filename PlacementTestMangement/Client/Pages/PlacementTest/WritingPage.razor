@@ -24,8 +24,8 @@
 				}
 			</InputRadioGroup>
 			<div class="d-flex justify-content-between">
-				<p class="text-danger fw-bold">The timer will start when input first letter</p>
 				<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
+				<p class="text-danger fw-bold">The timer will start when you input first letter</p>
 			</div>
 
 			<textarea class="w-100 m-4" @oninput="StartTimer" @bind="answerDto.AnswerText" style="height:500px" placeholder="Write Here..."></textarea>

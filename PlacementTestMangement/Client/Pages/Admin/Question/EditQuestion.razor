@@ -7,7 +7,7 @@
 		<EditForm Model="@question" class="card p-4" id="form" OnValidSubmit="@Edit">
 			<span class="mx-auto fw-bold fs-4">Add Question</span>
 			<label for="name" class="col-form-label">Question Text</label>
-			<input class="form-control mb-3" id="name" @bind-value="question.QuestionText"/>
+			<textarea @bind="@question.QuestionText"></textarea>
 			<label for="number" class="col-form-label">Question Mark</label>
 			<input class="form-control mb-3" id="number" @bind-value="question.Mark"/>
 			<label for="type" class="col-form-label">Question Section</label>
