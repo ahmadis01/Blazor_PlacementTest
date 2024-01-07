@@ -3,7 +3,7 @@
 @inject NavigationManager navigationManager
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @layout MainLayout
-@if (student.PlacementTestMark >= 20)
+@if (student.PlacementTestMark != 20)
 {
 	<div class="d-flex justify-content-between">
 		<h3 class="title">WRITING PLACEMENT TEST</h3>

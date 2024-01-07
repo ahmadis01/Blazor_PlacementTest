@@ -57,8 +57,13 @@
 			<input class="form-control mb-3" id="number" @bind-value="student.WritingMark"/>
 			<label for="number" class="col-form-label">Speaking Mark out of 5</label>
 			<input class="form-control mb-3" id="number" @bind-value="student.SpeakingMark"/>
+			@{
+				int devide = 1;
+				if (student.WritingMark != 0) devide = 2;
+				if (student.SpeakingMark != 0) devide = 3;
+			}
 			<label for="number" class="col-form-label">Total Score</label>
-			<input class="form-control mb-3" id="number" value="@(((double)placementTestMark + @student.WritingMark + @student.SpeakingMark))" disabled/>
+			<input class="form-control mb-3" id="number" value="@(((double)placementTestMark + @student.WritingMark + @student.SpeakingMark)/devide)" disabled/>
 			<label for="note" class="col-form-label">Notes</label>
 			<input class="form-control mb-3" id="note" @bind-value="student.Note" />
 			<label for="number" class="col-form-label">Level</label>
