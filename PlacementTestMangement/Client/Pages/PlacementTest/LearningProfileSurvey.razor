@@ -72,10 +72,15 @@
 	[Parameter]
 	public string? studentId { get; set; }
 	List<Question> questions { get; set; }
+	private PersonalDataDto personalData = new PersonalDataDto();
 	public List<StudentProfileAnswers>? answerDto { get; set; } = new List<StudentProfileAnswers>();
-
 	protected override async Task OnInitializedAsync()
 	{
+		personalData = await Http.GetFromJsonAsync<PersonalDataDto>($"/api/student/GetStudentPersonalData/{studentId}");
+
+		if(personalData.Age < 16)
+			navigationManager.NavigateTo($"/placementTest/{studentId}");
+
 		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.LEARNING_PROFILE_SURVEY}");
 	}
 	private async Task submit()

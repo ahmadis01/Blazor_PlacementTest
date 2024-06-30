@@ -24,6 +24,13 @@
 					<option value="@questionType">@questionType</option>
 				}
 			</InputSelect>
+			<label for="type" class="col-form-label">Category</label>
+			<InputSelect class="form-select w-50" @bind-Value="question.Category">
+				@foreach (var category in categories)
+				{
+					<option value="@category">@category.ToString()</option>
+				}
+			</InputSelect>
 			<sapn>Answers:</sapn>
 			<div class="answers">
 						<span>A.</span><InputText class="answer" type="text" @bind-Value="question.Answers[0].AnswerText"></InputText>
@@ -71,10 +78,13 @@
 	private Question? question = new Question();
 	List<string> questionTypes;
 	List<string> questionSections;
+	List<string> categories;
 	protected override async Task OnInitializedAsync(){
 		question =await Http.GetFromJsonAsync<Question>($"/api/Question/{QuestionId}");
 		questionTypes = Enum.GetNames<QuestionType>().ToList();
 		questionSections = Enum.GetNames<QuestionSection>().ToList();
+		categories = Enum.GetNames<Category>().ToList();
+
 	}
 	 async Task Edit(){
 		var respond = await Http.PutAsJsonAsync<Question>("/api/Question/",question);

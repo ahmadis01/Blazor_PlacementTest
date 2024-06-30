@@ -13,6 +13,8 @@ namespace PlacementTestMangement.Shared.Models
         public string Address { get;set; }
         public string SchoolOrWork { get; set; }
         public DateTime BirthDate { get; set; }
+        [Required(ErrorMessage = "Please choose your age")]
+        [Range(5,100, ErrorMessage = "Please choose valid age")]
         public int Age { get; set; }
         public double PlacementTestMark { get; set; } = 0;
         public int WritingMark { get; set; } = 0;

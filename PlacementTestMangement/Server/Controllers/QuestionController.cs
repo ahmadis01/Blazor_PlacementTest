@@ -41,11 +41,11 @@ namespace PlacementTestMangement.Server.Controllers
 			return Ok(questions);
 		}
 		[HttpGet("getByQuestionSection/{questionSection}")]
-		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsBySection(int questionSection)
+		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsBySection(int questionSection, int studentAge)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-			var questions = _questionRepository.GetByQuestinoSection((QuestionSection)questionSection);
+			var questions = _questionRepository.GetByQuestinoSection((QuestionSection)questionSection, studentAge);
 			return Ok(questions);
 		}
 		[HttpPost]

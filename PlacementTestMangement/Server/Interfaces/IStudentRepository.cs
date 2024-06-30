@@ -9,8 +9,8 @@ namespace PlacementTestMangement.Server.Interfaces
         Student GetStudent(int id);
         Student GetStudent(string name);
         Student AddStudent(Student student);
-        bool SubmitAnswer(StudentAnswerDto answer); 
-        bool SkipQuestion(StudentAnswerDto answer);
+        Task<int> SubmitAnswer(StudentAnswerDto answer); 
+        Task<int> SkipQuestion(StudentAnswerDto answer);
         bool DeleteStudent(int id);
         bool UpdateStudent(Student student);
         ICollection<Student> SearchStudents(string searchText);

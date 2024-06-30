@@ -3,7 +3,8 @@
 @inject NavigationManager navigationManager
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @layout MainLayout
-@if (student.PlacementTestMark >= 20)
+@*if (student.PlacementTestMark >= 20)*@
+@if (student.PlacementTestMark != 20 || questions.Count == 0)
 {
 	<div class="d-flex justify-content-between">
 		<h3 class="title">WRITING PLACEMENT TEST</h3>
@@ -24,7 +25,7 @@
 				}
 			</InputRadioGroup>
 			<div class="d-flex justify-content-between">
-				<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
+				<Timer Duration="student.Timer" OnUpdate="OnTimerUpdate" StartTimer="startTimer"></Timer>
 				<p class="text-danger fw-bold">The timer will start when you input first letter</p>
 			</div>
 
@@ -72,10 +73,23 @@ else
 	{
 		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.Writing}");
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
-		student.Timer = new TimeSpan(0, 15, 0);
+		student.Timer = new TimeSpan(0, 10, 0);
 		countDown = student.Timer;
 		//timer
-		await UpdateTimer(timerDto);
+		// await UpdateTimer(timerDto);
+	}
+	private async void OnTimerUpdate(TimeSpan time)
+	{
+		if (time == TimeSpan.Zero)
+		{
+			await submit();
+			navigationManager.NavigateTo("/placementTest/end");
+		}
+		else
+		{
+			timerDto.Timer = countDown;
+			timerDto.StudentId = Int16.Parse(studentId);
+		}
 	}
 
 	private async Task submit()
@@ -84,36 +98,32 @@ else
 		await Http.PutAsJsonAsync<List<StudentProfileAnswers>>($"/api/student/SubmitLearningProfileSurvey", new List<StudentProfileAnswers> { answerDto });
 		navigationManager.NavigateTo("/placementTest/end");
 	}
-	private async Task UpdateTimer(TimerDto timerDto)
-	{
-		if (startTimer)
-		{
-			timer = new System.Threading.Timer(async (object? stateInfo) =>
-			{
-				if (countDown == TimeSpan.Zero)
-				{
-					await submit();
-					navigationManager.NavigateTo("/placementTest/end");
-				}
-				else
-				{
-					countDown = countDown - TimeSpan.FromSeconds(1);
-					timerDto.Timer = countDown;
-					timerDto.StudentId = Int16.Parse(studentId);
-					if (countDown != TimeSpan.Zero)
-						await Http.PutAsJsonAsync<TimerDto>($"/api/student/updateTimer", timerDto);
-					StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
+	// private async Task UpdateTimer(TimerDto timerDto)
+	// {
+	// 	if (startTimer)
+	// 	{
+	// 		timer = new System.Threading.Timer(async (object? stateInfo) =>
+	// 		{
+	// 			if (countDown == TimeSpan.Zero)
+	// 			{
+	// 				await submit();
+	// 				navigationManager.NavigateTo("/placementTest/end");
+	// 			}
+	// 			else
+	// 			{
+	// 				countDown = countDown - TimeSpan.FromSeconds(1);
+	// 				timerDto.Timer = countDown;
+	// 				timerDto.StudentId = Int16.Parse(studentId);
 
-				}
+	// 				StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
 
-			}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
-		}
-	}
+	// 			}
+
+	// 		}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
+	// 	}
+	// }
 	private async Task StartTimer()
 	{
 		startTimer = true;
-		if(IsFirstInput)
-			await UpdateTimer(timerDto);
-		IsFirstInput = false;
 	}
 }

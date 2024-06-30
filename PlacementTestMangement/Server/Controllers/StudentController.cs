@@ -67,18 +67,18 @@ namespace PlacementTestMangement.Server.Controllers
             return Ok();
         }
         [HttpPut("/api/student/submitAnswer")]
-        public IActionResult SubmitAnswer([FromBody] StudentAnswerDto answer)
+        public async Task<IActionResult> SubmitAnswer([FromBody] StudentAnswerDto answer)
         {
             if (answer == null)
                 return BadRequest();
-            var result = _studentRepository.SubmitAnswer(answer);
+            var result = await _studentRepository.SubmitAnswer(answer);
             return Ok(result);
         }
         [HttpPut("/api/student/skip")]
-        public IActionResult SkipAnswer([FromBody]StudentAnswerDto answer)
+        public async Task<IActionResult> SkipAnswer([FromBody]StudentAnswerDto answer)
         {
-            _studentRepository.SkipQuestion(answer);
-            return Ok();
+            var result = await _studentRepository.SkipQuestion(answer);
+            return Ok(result);
         }
         [HttpPut("/api/student/subimtReadingAnswers")]
         public IActionResult SubmitReadingAnswers(ReadingAnswersDto answersDto)

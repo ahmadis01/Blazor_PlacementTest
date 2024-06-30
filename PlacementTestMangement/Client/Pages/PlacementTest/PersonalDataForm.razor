@@ -54,7 +54,6 @@
     protected override async Task OnInitializedAsync()
     {
         personalData = await Http.GetFromJsonAsync<PersonalDataDto>($"/api/student/GetStudentPersonalData/{studentId}");
-
     }
     async Task AddPersonalData()
     {

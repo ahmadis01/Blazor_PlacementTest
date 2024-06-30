@@ -24,6 +24,16 @@
 				<option value="@questionType">@questionType.ToString()</option>
 			}
 			</InputSelect>
+
+			<label for="type" class="col-form-label">Category</label>
+			<InputSelect class="form-select w-50" @bind-Value="question.Category">
+				@foreach (var category in categories)
+				{
+					<option value="@category">@category.ToString()</option>
+				}
+			</InputSelect>
+			<label for="number" class="col-form-label">Image</label>
+			<InputFile type="file" class="form-control mb-3" />
 			@if(question.QuestionType == QuestionType.Multiple_Choice)
 			{
 				<sapn class="m-1 fw-bold ">Answers:</sapn>
@@ -42,6 +52,7 @@
 
 				</div>
 			}
+			
 			@if (question.QuestionType == QuestionType.TrueOrFalse)
 			{
 				question.Answers[0].AnswerText = "True";
@@ -57,7 +68,6 @@
 					<div class="mx-3"><span>B.</span><InputCheckbox type="text" @bind-Value="question.Answers[1].IsCorrect"></InputCheckbox></div>
 				</div>
 			}
-
 			<DataAnnotationsValidator />
 			<ValidationSummary />
 			<button type="submit" class="btn btn-primary m-2">Add</button>
@@ -81,6 +91,7 @@
 	};
 	private List<string> questionSections = Enum.GetNames<QuestionSection>().ToList();
 	private List<string> questionTypes = Enum.GetNames<QuestionType>().ToList();
+	private List<string> categories = Enum.GetNames<Category>().ToList();
 	private async void Add()	
 	{
 		var respond = await Http.PostAsJsonAsync<Question>("/api/Question", question);

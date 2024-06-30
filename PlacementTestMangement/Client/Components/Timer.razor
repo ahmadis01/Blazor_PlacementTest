@@ -1,0 +1,28 @@
+﻿
+<span class="timer">@(new DateTime(CountDown.Ticks).ToString("mm:ss"))</span>
+
+
+@code {
+    [Parameter]
+    public TimeSpan Duration {get; set;} = TimeSpan.Zero;
+    public TimeSpan CountDown { get; set; }
+    [Parameter]
+    public EventCallback<TimeSpan> OnUpdate { get; set; }
+    [Parameter]
+    public bool StartTimer { get; set; }
+    private System.Threading.Timer? timer;
+    protected override async Task OnInitializedAsync()
+    {
+        CountDown = Duration;
+        timer = new System.Threading.Timer(async (object? stateInfo) =>
+        {
+            if(StartTimer)
+            {
+                CountDown = CountDown - TimeSpan.FromSeconds(1);
+                await OnUpdate.InvokeAsync(CountDown);
+                StateHasChanged(); 
+            }
+        }, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
+    }
+
+}

@@ -1,0 +1,11 @@
+.timer {
+    padding: 4px;
+    float: right;
+    margin: 10px;
+    font-size: 25px;
+    border: 1px crimson solid;
+    background-color: crimson;
+    border-radius: 15px;
+    color: white;
+}
+

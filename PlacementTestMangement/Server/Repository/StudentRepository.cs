@@ -74,7 +74,7 @@ namespace PlacementTestMangement.Server.Repository
         {
             return _context.Students.Where(x => x.PhoneNumber.Contains(searchText) || x.Name.Contains(searchText)).ToList();
         }
-        public bool SubmitAnswer(StudentAnswerDto answer)
+        public async Task<int> SubmitAnswer(StudentAnswerDto answer)
         {
             StudentAnswers studentAnswer = new StudentAnswers
             {
@@ -91,25 +91,25 @@ namespace PlacementTestMangement.Server.Repository
                 student.PlacementTestMark++;
                 student.CurrentQuestion = student.CurrentQuestion + 1;
                 _context.Update(student);
-                _context.SaveChanges();
-                return true;
+               await  _context.SaveChangesAsync();
+                return student.CurrentQuestion;
             }
             else
             {
                 student.CurrentQuestion = student.CurrentQuestion + 1;
                 _context.Update(student);
-                _context.SaveChanges();
-                return false;
-            }
-        }
-        public bool SkipQuestion(StudentAnswerDto answer)
+				await _context.SaveChangesAsync();
+				return student.CurrentQuestion;
+			}
+		}
+        public async Task<int> SkipQuestion(StudentAnswerDto answer)
         {
             Student student = _context.Students.Where(x => x.Id ==answer.StudentId).FirstOrDefault();
             student.CurrentQuestion ++;
             student.Timer = answer.Timer;
             _context.Update(student);
-            _context.SaveChanges();
-            return true;
+            await _context.SaveChangesAsync();
+            return student.CurrentQuestion;
         }
         public bool SubmitReadingAnswers(ReadingAnswersDto answersDto)
         {

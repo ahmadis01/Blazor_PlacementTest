@@ -11,7 +11,7 @@
 	};
 	<span class="title">Placement Test</span>
 	answerDto.QuestionId = questions[questionId].Id;
-	<span class="timer">@(new DateTime(countDown.Ticks).ToString("mm:ss"))</span>
+	<Timer @ref="timer" Duration="student.Timer" OnUpdate="OnTimerUpdate" StartTimer="true"></Timer>
 	<div class="paper m-xxl-4">
 		<EditForm Model="@answerDto" OnValidSubmit="@submit">
 
@@ -39,55 +39,44 @@
 }
 else
 {
-	navigationManager.NavigateTo($"/placementTest/writing/{studentId}");
-
+	navigationManager.NavigateTo($"/placementTest/writing/{studentId}", true);
 }
 
 @code {
 	public int questionId;
 	[Parameter]
 	public string? studentId { get; set; }
+	private Timer timer;
 	private Student student { get; set; }
 	protected bool isDisabled = true;
 	private Question[]? grammerQuestions { get; set; }
 	List<Question> questions { get; set; }
 	private StudentAnswerDto? answerDto { get; set; } = new StudentAnswerDto();
-	private System.Threading.Timer? timer;
-	private TimeSpan countDown;
 	private bool play;
-	private TimerDto timerDto = new TimerDto
-		{
-			StudentId = 0,
-			Timer = TimeSpan.Zero
-		};
 
 	protected override async Task OnInitializedAsync()
 	{
 		play = false;
 		answerDto.StudentId = Int16.Parse(studentId);
-		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.Placement_Test}");
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
-		countDown = student.Timer;
-		//timer
-		timer = new System.Threading.Timer(async (object? stateInfo) =>
+		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection?questionType={(int)QuestionSection.Placement_Test}&studentAge={student.Age}");
+	}
+	private async void OnTimerUpdate(TimeSpan time)
+	{
+		if (time == TimeSpan.Zero)
 		{
-			if (countDown == TimeSpan.Zero)
-			{
-				navigationManager.NavigateTo($"/placementTest/writing/{studentId}");
-			}else
-			{
-				countDown = countDown - TimeSpan.FromSeconds(1);
-				timerDto.Timer = countDown;
-				timerDto.StudentId = Int16.Parse(studentId);
-				await Http.PutAsJsonAsync<TimerDto>($"/api/student/updateTimer", timerDto);
-				StateHasChanged(); // NOTE: MUST CALL StateHasChanged() BECAUSE THIS IS TRIGGERED BY A TIMER INSTEAD OF A USER EVENT
-			}
-		}, new System.Threading.AutoResetEvent(false), 1000, 1000); // fire every 1000 milliseconds
+			navigationManager.NavigateTo($"/placementTest/writing/{studentId}", true);
+		}
+		else
+		{
+			await Http.PutAsJsonAsync<TimerDto>($"/api/student/updateTimer", new TimerDto{ StudentId = Int16.Parse(studentId), Timer = time});
+		}
 	}
 	private async Task submit()
 	{
-		await Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/submitAnswer", answerDto);
-		student.CurrentQuestion++;
+		var result = await Http.PutAsJsonAsync<StudentAnswerDto>($"/api/student/submitAnswer", answerDto);
+		student.CurrentQuestion = await result.Content.ReadFromJsonAsync<int>();
+		await Task.Delay(100);
 		answerDto.AnswerId = 0;
 	}
 	private void check()

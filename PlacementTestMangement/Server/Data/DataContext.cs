@@ -15,15 +15,7 @@ namespace PlacementTestMangement.Server.Data
         public DbSet<Record> Records { get; set; }
         public DbSet<Text> Texts { get; set; }
         public DbSet<Level> Levels { get; set; }
-        public DbSet<StudentAnswers> StudentAnswers{ get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Question>()
-                .HasMany(q => q.Answers)
-                .WithOne(a => a.Question)
-                .IsRequired();
-        }
+		public DbSet<StudentAnswers> StudentAnswers{ get; set; }
 
     }
 }

@@ -31,14 +31,18 @@ namespace PlacementTestMangement.Server.Repository
 		{
 			return _context.Questions.OrderBy(x => x.Id).Include(c=> c.Answers).ToList();
 		}
-		public async Task<IEnumerable<Question>> GetQuestionsByType(QuestionType questionType)
+		public async Task<IEnumerable<Question>> GetQuestionsByType([FromQuery]QuestionType questionType)
 		{
 			return await _context.Questions.Where(x => x.QuestionType == questionType).Include(a=>a.Answers).ToListAsync();
 		}
 
-		public IEnumerable<Question> GetByQuestinoSection(QuestionSection questionSection)
+		public IEnumerable<Question> GetByQuestinoSection(QuestionSection questionSection, int studentAge)
 		{
-			return _context.Questions.Where(x => x.QuestionSection == (QuestionSection)questionSection).Include(a => a.Answers).ToList();
+			return _context.Questions.Where(x =>
+					((6 < studentAge && studentAge <= 9 && x.Category == Category.Kids) ||
+					(10 < studentAge && studentAge <= 15 && x.Category == Category.Teens) ||
+					(16 < studentAge && x.Category == Category.Adults)) && 
+				x.QuestionSection == (QuestionSection)questionSection).Include(a => a.Answers).ToList();
 		}
 
 		public bool RemoveQuestion(int id)
