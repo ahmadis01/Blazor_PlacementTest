@@ -11,7 +11,7 @@ namespace PlacementTestMangement.Server.Interfaces
 		Task<IEnumerable<Question>> GetQuestionsByType(QuestionType questionType);
 		IEnumerable<Question> GetByQuestinoSection(QuestionSection questionSection, int studentAge);
 		Task<Question> GetQuestion(int id);
-		bool AddQuestion(Question question);
+		Task<bool> AddQuestion(Question question);
 		bool RemoveQuestion(int id);
 		bool UpdateQuestion(Question question);
 		

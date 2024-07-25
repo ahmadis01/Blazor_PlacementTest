@@ -1,4 +1,6 @@
 ﻿@page "/admin/question/add"
+@using Microsoft.AspNetCore.Http
+@using System.Net.Http.Headers
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
@@ -33,7 +35,7 @@
 				}
 			</InputSelect>
 			<label for="number" class="col-form-label">Image</label>
-			<InputFile type="file" class="form-control mb-3" />
+			<InputFile type="file" class="form-control mb-3" OnChange="LoadFile"/>
 			@if(question.QuestionType == QuestionType.Multiple_Choice)
 			{
 				<sapn class="m-1 fw-bold ">Answers:</sapn>
@@ -89,14 +91,37 @@
 			new Answer {AnswerKey="D" ,AnswerText="",IsCorrect=false},
 		}
 	};
+	public string filePath = string.Empty;
+	public IBrowserFile file;
+
 	private List<string> questionSections = Enum.GetNames<QuestionSection>().ToList();
 	private List<string> questionTypes = Enum.GetNames<QuestionType>().ToList();
 	private List<string> categories = Enum.GetNames<Category>().ToList();
-	private async void Add()	
+	private async Task Add()	
 	{
+		if(file != null)
+		{
+			var stream = file.OpenReadStream(maxAllowedSize:1024*10000);
+			var buffer = new byte[file.Size];
+			await stream.ReadAsync(buffer, 0, (int)file.Size);
+
+			var content = new MultipartFormDataContent();
+			content.Add(new ByteArrayContent(buffer), "file", file.Name);
+
+			var response = await Http.PostAsync($"/api/Question/UploadImage", content);
+			response.EnsureSuccessStatusCode();
+			var responseContent = await response.Content.ReadAsStringAsync();
+			filePath = responseContent;
+		}
+		question.Image = filePath;
 		var respond = await Http.PostAsJsonAsync<Question>("/api/Question", question);
+		var data = respond.Content.ReadAsStringAsync();
 		navigationManager.NavigateTo("/admin/question");
 	}
-
+	public void LoadFile(InputFileChangeEventArgs e)
+	{
+		file = e.File;
+		Console.WriteLine(file.Name);
+	}
 
 }

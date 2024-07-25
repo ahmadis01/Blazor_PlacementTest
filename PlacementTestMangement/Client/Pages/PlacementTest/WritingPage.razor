@@ -71,8 +71,9 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection/{(int)QuestionSection.Writing}");
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
+		var url = $"/api/Question/getByQuestionSection?questionSection={(int)QuestionSection.Writing}&studentAge={student.Age}";
+		questions = await Http.GetFromJsonAsync<List<Question>>(url);
 		student.Timer = new TimeSpan(0, 10, 0);
 		countDown = student.Timer;
 		//timer

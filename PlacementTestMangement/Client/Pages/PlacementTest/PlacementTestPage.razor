@@ -16,6 +16,10 @@
 		<EditForm Model="@answerDto" OnValidSubmit="@submit">
 
 			<p class="fs-4">@(questionId + 1) . @questions[questionId].QuestionText</p>
+			@if(!string.IsNullOrEmpty(questions[questionId].Image))
+			{
+				<img class="w-50 h-50" src="@(navigationManager.BaseUri + questions[questionId].Image)"/>	
+			}
 			<div class="d-flex justify-content-evenly">
 				<InputRadioGroup @bind-Value="answerDto.AnswerId">
 					@foreach (var answer in questions[questionId].Answers)
@@ -59,7 +63,8 @@ else
 		play = false;
 		answerDto.StudentId = Int16.Parse(studentId);
 		student = await Http.GetFromJsonAsync<Student>($"/api/Student/{studentId}");
-		questions = await Http.GetFromJsonAsync<List<Question>>($"/api/Question/getByQuestionSection?questionType={(int)QuestionSection.Placement_Test}&studentAge={student.Age}");
+		var url = $"/api/Question/getByQuestionSection?questionSection={(int)QuestionSection.Placement_Test}&studentAge={student.Age}";
+		questions = await Http.GetFromJsonAsync<List<Question>>(url);
 	}
 	private async void OnTimerUpdate(TimeSpan time)
 	{

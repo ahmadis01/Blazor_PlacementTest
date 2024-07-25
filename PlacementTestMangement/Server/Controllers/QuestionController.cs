@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PlacementTestMangement.Server.Helper;
 using PlacementTestMangement.Server.Interfaces;
 using PlacementTestMangement.Shared.Dto;
 using PlacementTestMangement.Shared.Enums;
 using PlacementTestMangement.Shared.Models;
+using System.Runtime.CompilerServices;
 
 namespace PlacementTestMangement.Server.Controllers
 {
@@ -12,10 +14,12 @@ namespace PlacementTestMangement.Server.Controllers
 	public class QuestionController : ControllerBase
 	{
 		private readonly IQuestionRepository _questionRepository;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public QuestionController(IQuestionRepository questionRepository)
+		public QuestionController(IQuestionRepository questionRepository, IWebHostEnvironment webHostEnvironment)
 		{
 			_questionRepository = questionRepository;
+			_webHostEnvironment = webHostEnvironment;
 		}
 		[HttpGet]
 		public IActionResult GetQuestions()
@@ -37,11 +41,11 @@ namespace PlacementTestMangement.Server.Controllers
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-			var questions =await _questionRepository.GetQuestionsByType((QuestionType)questionType);
+			var questions = await _questionRepository.GetQuestionsByType((QuestionType)questionType);
 			return Ok(questions);
 		}
-		[HttpGet("getByQuestionSection/{questionSection}")]
-		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsBySection(int questionSection, int studentAge)
+		[HttpGet("getByQuestionSection")]
+		public async Task<ActionResult<IEnumerable<Question>>> GetQuestionsBySection([FromQuery] int questionSection, [FromQuery] int studentAge)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -49,14 +53,15 @@ namespace PlacementTestMangement.Server.Controllers
 			return Ok(questions);
 		}
 		[HttpPost]
-		public IActionResult AddQuestion([FromBody]Question question){
+		public IActionResult AddQuestion([FromBody] Question question)
+		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 			_questionRepository.AddQuestion(question);
 			return Ok();
 		}
 		[HttpPut]
-		public IActionResult UpdateQuestion([FromBody]Question question)
+		public IActionResult UpdateQuestion([FromBody] Question question)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -68,6 +73,13 @@ namespace PlacementTestMangement.Server.Controllers
 		{
 			_questionRepository.RemoveQuestion(id);
 			return Ok();
+		}
+
+		[HttpPost("[action]")]
+		public async Task<IActionResult> UploadImage(IFormFile file)
+		{
+			var name = await HelperMethods.UploadFile(file, _webHostEnvironment);
+			return Ok(name);
 		}
 	}
 }
